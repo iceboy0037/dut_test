@@ -14,5 +14,8 @@
 #ifndef __DTU_CONFIG_H__
 #define __DTU_CONFIG_H__
 
+typedef unsigned char BYTE;
+typedef unsigned short WORD;
+typedef unsigned int DWORD;
 
 #endif

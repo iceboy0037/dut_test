@@ -90,7 +90,7 @@ void safe_flush(FILE *fp)
 
 	while ((ch = fgetc(fp)) != EOF && ch != '\n');
 }
-
+/**
 void shell_task(void *param)
 {
 	int argc;
@@ -120,8 +120,8 @@ void shell_task(void *param)
 int shell_print_args(int argc, char *argv)
 {
 	int i;
-	shell_printf("\nargc = %d\n", argc);
 
+	shell_printf("\nargc = %d\n", argc);
 	for (i = 0; i < argc; i ++) {
 		shell_printf("argv[%d]: %s\n", i, ARGV(i));
 	}
@@ -153,7 +153,7 @@ int shell_print_usage(char *name, char *detail)
 
 int shell_cmd_help(int argc, char *argv)
 {
-#ifdef SHELL_COMMAND_SECTION
+#if SHELL_COMMAND_SECTION
 	struct cmd_tbl_s *entry = shell_get_cmd_entry_section();
 	int count = shell_command_count();
 #else
@@ -208,37 +208,17 @@ struct cmd_tbl_s *shell_get_cmd_entry_section(void)
 }
 
 /**
- * @brief 
- * @param  argc        Desc.
- * @param  argv        Desc.
+ * @brief Simulator entry point
+ * @param  argc        
+ * @param  argv	
  * @return int 
  */
 int main(int argc, char *argv[])
 {
-	extern int __shell_command_section_start;
-	extern int __shell_command_section_end;	
-	dbg("Size of cmd_tbl_s : %d, sizeof pointer = %d\n", sizeof(struct cmd_tbl_s), (int)sizeof(int*));
-	dbg("start : %x, end: %x, len = %d\n", __shell_command_section_start, __shell_command_section_end, 
-		__shell_command_section_end - __shell_command_section_start);
-	
-	extern int __init_array_start;
-	extern int __init_array_end;
-	dbg("__init_array_start : %x, __init_array_end : %x\n", __init_array_start, __init_array_end);
-
-	dbg("cmd_tbl_start : %x, cmd_tbl_end: %x, cnt = %d\n", (unsigned int)&cmd_tbl_start, (unsigned int)&cmd_tbl_end, ((int)&cmd_tbl_end - (int)&cmd_tbl_start) / sizeof(struct cmd_tbl_s));
-	dbg("shell_cmd_help : %x\n", (unsigned int)&shell_cmd_help);
-	dbg("shell_cmd_quit : %x\n", (unsigned int)&shell_cmd_quit);
-	dbg("shell_cmd_hello : %x\n", (unsigned int)&shell_cmd_hello);
-
-	exit(0);
-
 	shell_init();
 	shell_task(NULL);
 	return 0;
 }
-SHELL_COMMAND(help, shell_cmd_help, "help", "Print all shell commands")
-SHELL_COMMAND(q, shell_cmd_quit, "q", "quit")
-SHELL_COMMAND(hello, shell_cmd_hello, "hello", "Print hello world for test")
 
 BEGIN_COMMAND(shell)
 	ON_COMMAND("?", shell_cmd_help, "?", "Print all shell commands")

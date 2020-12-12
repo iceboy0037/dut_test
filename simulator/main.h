@@ -10,7 +10,7 @@
 #define ARGV(i)             		((char *)(argv + (i) * SHELL_CMD_PARAM_LEN_MAX))
 #define SHELL_VERSION           	"v1.0.0"
 
-#define SHELL_COMMAND_SECTION       	// Used LDS section define
+#define SHELL_COMMAND_SECTION       	0
 #define __DEBUG__			1
 
 #if __DEBUG__

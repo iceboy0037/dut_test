@@ -1,4 +1,4 @@
-TARGET = ./dtu_sim.out
+TARGET = ./simulator.out
 CROSS_COMPILE = 
 DEBUG=
 LIBS = -lm -lpthread
@@ -28,7 +28,7 @@ AFLAG=-Wall
 CFLAGS = -O2 $(DEBUG) -Wall -g $(include_dirs)
 
 AFLAGS = -g -Wall
-SOFLAGS = -Tsim.lds
+SOFLAGS = 
 
 all_dirs = $(shell find . -maxdepth 3 -type d)
 DIRS = $(filter-out $(exclude_dirs), $(all_dirs))
