@@ -1,9 +1,12 @@
 TARGET = ./m4firm.out
 CROSS_COMPILE = 
 DEBUG=
-LIBS = -lm -lpthread -lhiredis
-DEF = -DSIMULATOR
+DEF = -DSIMULATOR -DM4FIRMWARE
 
+exclude_dirs = $(wildcard ./.git )
+exclude_dirs += $(wildcard ./.git/* )
+exclude_dirs += $(wildcard ./.git/*/* )
+exclude_dirs += $(wildcard ./.git/*/*/* )
 exclude_dirs += ../doc
 
 include_dirs = -I./
@@ -11,11 +14,13 @@ include_dirs += -I./inc
 include_dirs += -I../common
 include_dirs += -I../common/inc
 
-include_dirs += -I./devs/
-include_dirs += -I./devs/inc
-
-include_dirs += -I./dbs/
+include_dirs += -I./dbs
 include_dirs += -I./dbs/inc
+include_dirs += -I./dbs/src
+
+include_dirs += -I./devs
+include_dirs += -I./devs/inc
+include_dirs += -I./devs/src
 
 ######################################################################################################################
 CC = $(CROSS_COMPILE)gcc
@@ -27,6 +32,7 @@ MV = mv -f
 RM = rm -rf
 LN = ln -sf
 
+LIBS = -lm -lpthread -lhiredis
 CFLAG=-Wall -Wno-unused-result
 AFLAG=-Wall
 CFLAGS = -O0 $(DEBUG) -Wall -g $(include_dirs)
@@ -34,7 +40,10 @@ CFLAGS = -O0 $(DEBUG) -Wall -g $(include_dirs)
 AFLAGS = -g -Wall
 SOFLAGS = 
 
-all_dirs = $(shell find . -maxdepth 3 -type d)
+all_dirs = $(shell find . -maxdepth 4 -type d)
+link_dir = $(shell find . -maxdepth 4 -type l)
+all_dirs += $(foreach n, $(link_dir), $(shell find $(n)/ -maxdepth 4 -type d))
+
 DIRS = $(filter-out $(exclude_dirs), $(all_dirs))
 FILES = $(foreach dir, $(DIRS), $(wildcard $(dir)/*.s))
 CFILES = $(foreach dir, $(DIRS), $(wildcard $(dir)/*.c))

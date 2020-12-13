@@ -25,31 +25,6 @@ extern "C" {
 #include "devs.h"
 
 
-
-// ADC APIs
-/**
- * @brief Init ADC peripheral
- * @param  freq		ADC sample frequency
- * @param  count	ADC Sample count per period
- * @return int		0 - success 
- */
-int adc_init(int freq, int count);
-
-/**
- * @brief Get Current Grid frequency from FPGA
- * @param  freq		Store freq from FPGA
- * @return int 		0 - success
- */
-int adc_get_freq(float *freq);
-
-
-int adc_set_buff_count(int cnt);
-int adc_get_buff_count(int *cnt);
-int adc_get(int *buf, int count);
-int adc_start(void);
-int adc_stop(void);
-int adc_set_freq(int freq);
-
 #ifdef __cplusplus
 }
 #endif

@@ -16,6 +16,7 @@
 #include <string.h>
 
 #include "main.h"
+#include "devs.h"
 #include "rdb.h"
 
 static char line_buffer[SHELL_LINE_BUFF_LEN];
@@ -198,6 +199,7 @@ void shell_init(void)
 void simulator_init(void) 
 {
 	rdb_init();
+	sim_devs_init();
 }
 
 #if SHELL_COMMAND_SECTION > 0

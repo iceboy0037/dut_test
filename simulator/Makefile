@@ -2,6 +2,7 @@ TARGET = ./simulator.out
 CROSS_COMPILE = 
 DEBUG=
 LIBS = -lm -lpthread -lhiredis
+DEF = -DSIMULATOR
 
 
 exclude_dirs = $(wildcard ./.git )
@@ -17,6 +18,9 @@ include_dirs += -I../common/inc
 
 include_dirs += -I./dbs
 include_dirs += -I./dbs/inc
+
+include_dirs += -I./devs
+include_dirs += -I./devs/inc
 
 ######################################################################################################################
 CC = $(CROSS_COMPILE)gcc
@@ -51,7 +55,7 @@ OBJS += $(patsubst %.c, %.o, $(CFILES))
 
 VPATH =
 .c.o:
-	$(CC) -c $(CFLAGS) $(DEF) $< -o $@
+	@$(CC) -c $(CFLAGS) $(DEF) $< -o $@
 .s.o:
 	@$(CC) -c $(AFLAGS) $(DEF) -D_asm $< -o $@
 

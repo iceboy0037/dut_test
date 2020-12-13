@@ -14,8 +14,6 @@
 
 #include <stdio.h>
 #include "adc.h"
-#include "rdb.h"
-
 
 /**
  * @brief m4 firmware main entry
@@ -25,5 +23,7 @@
  */
 int main(int argc, char *argv[])
 {
+	adc_init(ADC_GRID_FREQ_DEFAULT, ADC_WAVE_SAMPLE_POINT);
+
 	return 0;
 }

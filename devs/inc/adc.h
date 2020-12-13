@@ -16,6 +16,24 @@
 #define __ADC_H__
 
 #define ADC_BUF_COUNT_DEFAULT		4
-#define ADC
+#define ADC_GRID_FREQ_DEFAULT		50
+#define ADC_WAVE_SAMPLE_POINT		96
+#define ADC_SAMPLE_FREQ_DEFAULT		(ADC_GRID_FREQ_DEFAULT * ADC_WAVE_SAMPLE_POINT)
+
+/**
+ * @brief Init ADC peripheral
+ * @param  freq		Grid frequency
+ * @param  count	ADC Sample count per period
+ * @return int		0 - success 
+ */
+extern int adc_init(int freq, int count);
+
+/**
+ * @brief Get Current Grid frequency from FPGA
+ * @param  freq		Store freq from FPGA
+ * @return int 		0 - success
+ */
+int adc_get_freq(float *freq);
+
 
 #endif
