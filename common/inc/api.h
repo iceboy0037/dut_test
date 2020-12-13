@@ -34,11 +34,16 @@ int adc_init(int freq, int count);
 /**
  * @brief Get Current Grid frequency from FPGA
  * @param  freq             Store freq from FPGA
- * @return int 0 - 
+ * @return int 0 - success
  */
 int adc_get_freq(float *freq);
 
 
+/**
+ * @brief 
+ * @param	cnt	Desc.
+ * @return int 
+ */
 int adc_set_buff_count(int cnt);
 int adc_get_buff_count(int *cnt);
 int adc_get(int *buf, int count);

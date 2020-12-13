@@ -40,7 +40,7 @@ struct cmd_tbl_s {
 #define SHELL_COMMAND(name, cmd, usage, help)  struct cmd_tbl_s name##_shell_command_entity \
 	 __attribute__((section(".shell_command_section"))) = {#name, cmd, usage, help};
 
-#define shell_command_count()           shell_get_cmd_count_section()
+//#define shell_command_count()           shell_get_cmd_count_section()
 extern int shell_get_cmd_count_section(void);
 extern struct cmd_tbl_s *shell_get_cmd_entry_section(void);
 extern struct cmd_tbl_s shell_command_array[];

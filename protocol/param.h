@@ -77,4 +77,27 @@ typedef struct tagT_IEC10X_CFG {
 	DWORD read_file_tm; //读取文件数据响应时间
 } T_IEC10X_CFG;
 
+// 远传配置结构体
+typedef struct tagT_TRANCFG {
+WORD wIndex; //转发序号
+WORD wAi; //遥测数目
+WORD wDi; //遥信数目
+WORD wDd; //电度数目
+WORD wDo; //遥控数目
+TranDataItem m_ai[MAX_TRAN_AI]; //遥测参数 数组或指针
+TranDataItem m_di[MAX_TRAN_DI]; //遥信参数
+TranDataItem m_do[MAX_TRAN_DO]; //遥控参数
+TranDataItem m_dd[MAX_TRAN_DD]; //电度参数
+
+}T_TRANCFG;
+
+// 数据条目结构体
+typedef struct tagTranDataItem {
+WORD tran_index;//数据远传序号
+WORD point_index;//设备数据点序号
+WORD data_type;//数据类型
+WORD point_type;//数据点类型
+float cc2;//系数
+}TranDataItem;
+
 #endif

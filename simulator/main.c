@@ -47,7 +47,7 @@ void split(char *src, char separator, char *dest, int *num, int lenmax)
 
 int shell_on_command(int argc, char *argv)
 {
-#ifdef SHELL_COMMAND_SECTION
+#if SHELL_COMMAND_SECTION
 	struct cmd_tbl_s *entry = shell_get_cmd_entry_section();
 	int count = shell_command_count();
 #else
@@ -91,6 +91,9 @@ void safe_flush(FILE *fp)
 	while ((ch = fgetc(fp)) != EOF && ch != '\n');
 }
 /**
+ * @brief 
+ * @param 	 param 	Desc.
+ */
 void shell_task(void *param)
 {
 	int argc;
@@ -117,6 +120,12 @@ void shell_task(void *param)
 		memset(line_buffer, 0, SHELL_LINE_BUFF_LEN);
 	}
 }
+/**
+ * @brief 
+ * @param 	 argc 	Desc.
+ * @param 	 argv 	Desc.
+ * @return int 
+ */
 int shell_print_args(int argc, char *argv)
 {
 	int i;
@@ -219,9 +228,3 @@ int main(int argc, char *argv[])
 	shell_task(NULL);
 	return 0;
 }
-
-BEGIN_COMMAND(shell)
-	ON_COMMAND("?", shell_cmd_help, "?", "Print all shell commands")
-	ON_COMMAND("help", shell_cmd_help, "help", "Print all shell commands")
-	ON_COMMAND("q", shell_cmd_quit, "q", "quit")
-END_COMMAND(shell)

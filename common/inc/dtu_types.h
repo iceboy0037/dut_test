@@ -11,8 +11,20 @@
  * <tr><td>2020-12-11 <td>1.0     <td>wangh     <td>内容
  * </table>
  */
-#ifndef __DTU_CONFIG_H__
-#define __DTU_CONFIG_H__
+#ifndef __DTU_TYPES_H__
+#define __DTU_TYPES_H__
+
+#ifndef BOOL
+#define BOOL	int
+#endif
+
+#ifndef TRUE
+#define TRUE	(-1)
+#endif
+
+#ifndef FALSE
+#define FALSE
+#endif
 
 typedef unsigned char BYTE;
 typedef unsigned short WORD;

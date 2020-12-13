@@ -1,17 +1,17 @@
 TARGET = ./simulator.out
 CROSS_COMPILE = 
 DEBUG=
-LIBS = -lm -lpthread
+LIBS = -lm -lpthread -lhiredis
 
 exclude_dirs = $(wildcard ./.git )
 exclude_dirs += $(wildcard ./.git/* )
 exclude_dirs += $(wildcard ./.git/*/* )
-exclude_dirs += ./doc
+exclude_dirs += ../doc
 
 include_dirs = -I./
 include_dirs += -I./inc
-include_dirs += -I./common
-include_dirs += -I./common/inca
+include_dirs += -I../common
+include_dirs += -I../common/inc
 
 ######################################################################################################################
 CC = $(CROSS_COMPILE)gcc
