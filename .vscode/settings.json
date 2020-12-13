@@ -1,0 +1,8 @@
+{
+	"files.associations": {
+		"*.wxss": "css",
+		"*.wxml": "html",
+		"*.inc": "c",
+		"xstring": "c"
+	}
+}

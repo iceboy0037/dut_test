@@ -3,15 +3,20 @@ CROSS_COMPILE =
 DEBUG=
 LIBS = -lm -lpthread -lhiredis
 
+
 exclude_dirs = $(wildcard ./.git )
 exclude_dirs += $(wildcard ./.git/* )
 exclude_dirs += $(wildcard ./.git/*/* )
+exclude_dirs += $(wildcard ./.git/*/*/* )
 exclude_dirs += ../doc
 
 include_dirs = -I./
 include_dirs += -I./inc
 include_dirs += -I../common
 include_dirs += -I../common/inc
+
+include_dirs += -I./dbs
+include_dirs += -I./dbs/inc
 
 ######################################################################################################################
 CC = $(CROSS_COMPILE)gcc
@@ -25,12 +30,18 @@ LN = ln -sf
 
 CFLAG=-Wall -Wno-unused-result
 AFLAG=-Wall
-CFLAGS = -O2 $(DEBUG) -Wall -g $(include_dirs)
+CFLAGS = -O0 $(DEBUG) -Wall -g $(include_dirs)
 
 AFLAGS = -g -Wall
 SOFLAGS = 
 
-all_dirs = $(shell find . -maxdepth 3 -type d)
+all_dirs = $(shell find . -maxdepth 4 -type d)
+link_dir = $(shell find . -maxdepth 4 -type l)
+#$(warning "the value of LINK is: $(link)")
+all_dirs += $(foreach n, $(link_dir), $(shell find $(n)/ -maxdepth 4 -type d))
+#$(warning "the value of LOCAL_PATH is: $(all_dirs)")
+#all_dirs += $(foreach n, $(link_dir), $(n))
+
 DIRS = $(filter-out $(exclude_dirs), $(all_dirs))
 FILES = $(foreach dir, $(DIRS), $(wildcard $(dir)/*.s))
 CFILES = $(foreach dir, $(DIRS), $(wildcard $(dir)/*.c))
@@ -40,12 +51,12 @@ OBJS += $(patsubst %.c, %.o, $(CFILES))
 
 VPATH =
 .c.o:
-	@$(CC) -c $(CFLAGS) $(DEF) $< -o $@
+	$(CC) -c $(CFLAGS) $(DEF) $< -o $@
 .s.o:
 	@$(CC) -c $(AFLAGS) $(DEF) -D_asm $< -o $@
 
 $(TARGET):$(OBJS)
-	@$(CC) $(SOFLAGS) -o $@ $(OBJS) $(LIBS)
+	$(CC) $(SOFLAGS) -o $@ $(OBJS) $(LIBS)
 
 clean:
 	@$(RM) $(TARGET)

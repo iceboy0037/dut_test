@@ -11,18 +11,6 @@
 #define SHELL_VERSION           	"v1.0.0"
 
 #define SHELL_COMMAND_SECTION       	0
-#define __DEBUG__			1
-
-#if __DEBUG__
-#define dbg(fmt, args...)       do {\
-		printf("[Line:%d]Func-%s:", __LINE__, __FUNCTION__);\
-		printf(fmt, ##args);\
-		fflush(stdout);\
-	} while (0)
-#else
-#define dbgInit(name)
-#define dbg
-#endif
 
 struct cmd_tbl_s {
 	char    *name;

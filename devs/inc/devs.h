@@ -1,6 +1,10 @@
 #ifndef __DEVS_H__
 #define __DEVS_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int devs_get_di(int *buf, int start, int count);
 int devs_set_do(int *buf, int start, int count);
 
@@ -14,5 +18,9 @@ int devs_adc_get_buff_count(int *cnt);
 int devs_adc_get(int *buf, int count);
 int devs_adc_start(void);
 int devs_adc_stop(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -14,6 +14,10 @@
 #ifndef __DTU_TYPES_H__
 #define __DTU_TYPES_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef BOOL
 #define BOOL	int
 #endif
@@ -23,11 +27,14 @@
 #endif
 
 #ifndef FALSE
-#define FALSE
+#define FALSE	(0)
 #endif
 
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 typedef unsigned int DWORD;
 
+#ifdef __cplusplus
+}
+#endif
 #endif

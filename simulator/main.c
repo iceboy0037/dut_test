@@ -16,6 +16,7 @@
 #include <string.h>
 
 #include "main.h"
+#include "rdb.h"
 
 static char line_buffer[SHELL_LINE_BUFF_LEN];
 static char cmd_buffer[SHELL_CMD_PARAM_CNT_MAX][SHELL_CMD_PARAM_LEN_MAX];
@@ -97,8 +98,8 @@ void safe_flush(FILE *fp)
 void shell_task(void *param)
 {
 	int argc;
+	
 	shell_printf((char *)"\n------ DTU Simulator %s (%s %s) ------\n", SHELL_VERSION, __DATE__, __TIME__);
-
 	while (1) {
 		shell_printf(SHELL_PROMPT);
 		if (scanf("%[^\n]%*c", line_buffer) == 0) {
@@ -194,7 +195,12 @@ void shell_init(void)
 {
 }
 
+void simulator_init(void) 
+{
+	rdb_init();
+}
 
+#if SHELL_COMMAND_SECTION > 0
 struct cmd_tbl_s cmd_tbl_end  __attribute__((section(".shell_command_section")))  = {0};
 struct cmd_tbl_s cmd_tbl_start  __attribute__((section(".shell_command_section")))  = {0};
 int shell_get_cmd_count_section(void)
@@ -215,6 +221,7 @@ struct cmd_tbl_s *shell_get_cmd_entry_section(void)
 	struct cmd_tbl_s *p = &cmd_tbl_start;
 	return ++p;
 }
+#endif
 
 /**
  * @brief Simulator entry point
@@ -224,6 +231,7 @@ struct cmd_tbl_s *shell_get_cmd_entry_section(void)
  */
 int main(int argc, char *argv[])
 {
+	simulator_init();
 	shell_init();
 	shell_task(NULL);
 	return 0;

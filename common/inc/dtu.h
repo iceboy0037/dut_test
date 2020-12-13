@@ -14,7 +14,14 @@
 #ifndef __DTU_H__
 #define __DTU_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "dtu_types.h"
 #include "dtu_config.h"
 
+#ifdef __cplusplus
+}
+#endif
 #endif

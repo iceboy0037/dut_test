@@ -13,6 +13,7 @@
  */
 #include "simulator.h"
 #include "devs.h"
+#include "rdb.h"
 
 static int do_buf[CONFIG_DO_NUMBER];
 static int di_buf[CONFIG_DI_NUMBER];

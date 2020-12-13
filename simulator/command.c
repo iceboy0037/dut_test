@@ -14,6 +14,8 @@
 #include "simulator.h"
 #include "main.h"
 #include "devs.h"
+#include "rdb.h"
+#include "dbg.h"
 
 int shell_cmd_lsdi(int argc, char *argv)
 {
@@ -63,6 +65,38 @@ int shell_cmd_togdo(int argc, char *argv)
 }
 int shell_cmd_togdi(int argc, char *argv)
 {
+	return 0;
+}
+
+int shell_cmd_dbset(int argc, char *argv)
+{
+	if (argc != 3) {
+		printf("Usage: dbset <key> <value>\n");
+		return -1;
+	}
+	if (rdb_set_str(ARGV(1), ARGV(2)) != TRUE) {
+		dbg("Set %s failed\n", ARGV(1));
+		return -1;
+	}
+	dbg("Set %s to %s success\n", ARGV(1), ARGV(2));
+
+	return 0;
+}
+int shell_cmd_dbget(int argc, char *argv) 
+{
+	char buf[RDB_REPLY_BUF_LEN] = {0};
+
+	if (argc != 2) {
+		printf("Usage: dbset <key> <value>\n");
+		return -1;
+	}
+
+	if (rdb_get_str(ARGV(1), buf) != TRUE) {
+		dbg("Get %s failed\n", ARGV(1));
+		return -1;
+	}
+	dbg("Get %s success : value = %s\n", ARGV(1), buf);
+
 	return 0;
 }
 #include "command.inc"

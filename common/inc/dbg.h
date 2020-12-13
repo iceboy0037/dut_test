@@ -1,6 +1,10 @@
 #ifndef __DBG_H__
 #define __DBG_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //
 #define LOG_EMERG	"<0>"
 #define LOG_ALERT	"<1>"
@@ -13,7 +17,23 @@
 
 #define DEFAULT_MESSAGE_LOGLEVEL 
 
-int log(int level, char *fmt, ...);
-int dbg(char *fmt, ...);
+int plog(int level, char *fmt, ...);
+
+#define __DEBUG__			1
+
+#if __DEBUG__
+#define dbg(fmt, args...)       do {\
+		printf("[Line:%d]Func-%s:", __LINE__, __FUNCTION__);\
+		printf(fmt, ##args);\
+		fflush(stdout);\
+	} while (0)
+#else
+#define dbgInit(name)
+#define dbg
+#endif
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

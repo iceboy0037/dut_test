@@ -15,6 +15,10 @@
 #ifndef __DTU_CONFIG_H__
 #define __DTU_CONFIG_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define CONFIG_PWR_BOARD_NUMBER		1	// Power board number
 #define CONFIG_DO_BOARD_NUMBER 		2	// DO output board number
 #define	CONFIG_DI_BOARD_NUMBER		4 	// DI input board number
@@ -36,4 +40,7 @@
 #define CONFIG_ADC_CHANNEL_PER_BOARD	16
 #define CONFIG_ADC_CHANNEL_NUMBER	(CONFIG_AD_BOARD_NUMBER * CONFIG_ADC_CHANNEL_PER_BOARD)
 
+#ifdef __cplusplus
+}
+#endif
 #endif
