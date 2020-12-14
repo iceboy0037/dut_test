@@ -4,6 +4,8 @@
 
 ## 一、Redis安装与配置
 
+这些操作只在首次未安装redis环境时操作一次即可。
+
 ### 1.1 Redis-Server
 
 ```shell
@@ -34,21 +36,6 @@ service redis start
 $ sudo service redis stop
 ```
 
-在文件中，找到supervised指令。 该指令允许您声明一个init系统来管理Redis作为服务，从而为您提供对其操作的更多控制。 受supervised指令默认设置为no 。 由于您正在运行使用systemd init系统的Ubuntu，请将其更改为systemd ：
-
-```
-# If you run Redis from upstart or systemd, Redis can interact with your
-# supervision tree. Options:
-#   supervised no      - no supervision interaction
-#   supervised upstart - signal upstart by putting Redis into SIGSTOP mode
-#   supervised systemd - signal systemd by writing READY=1 to $NOTIFY_SOCKET
-#   supervised auto    - detect upstart or systemd method based on
-#                        UPSTART_JOB or NOTIFY_SOCKET environment variables
-# Note: these supervision methods only signal "process is ready."
-#       They do not enable continuous liveness pings back to your supervisor.
-supervised systemd
-```
-
 ### 1.3 hiredis
 
 下载
@@ -64,11 +51,83 @@ cd hiredis
 make && make install
 ```
 
-使用
+修改配置文件，增加链接目录
 
-```c
-#include <hiredis/hiredis.h>
+```shell
+# 打开配置文件
+vi ~/.bashrc
+# 在里面添加共享库搜索目录
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
+# 退出VI，让配置生效
+source ~/.bashrc
 ```
 
-## 二、模拟器
+## 二、模块化开发
+
+在开发过程中，每个模块开发人员，原则上不可提交模块自身以外的代码，模块的划分及目录的配置如下：
+
+| 目录名         | 目录      | 说明                                       |
+| -------------- | --------- | ------------------------------------------ |
+| 通用文件       | common    | 系统共用的头文件或定义，由其它模块调用     |
+| 配置文件       | config    | 系统配置文件相关，启动脚本，数据表定义等   |
+| 数据服务       | dbs       | 数据库管理，模拟环境下由其它模块直接调用   |
+| 设备服务       | devs      | 系统设备，模拟环境下由其它模块直接调用     |
+| 保护逻辑与计算 | m4/relay  | 生成可执行文件，Ubuntu上可直接运行         |
+| 通讯协议处理   | protocol  | 生成可执行文件，Ubuntu上可直接运行         |
+| DTU模拟器      | simulator | 提供DIO模拟，ADC控制接口，Ubuntu可直接运行 |
+
+**因为多模块联合编译时的功能切换宏的问题，需要重新编译其它模块时，请使用make clean先清除再重新make编译，如编译了m4后，需要重新编译simulator，则对simulator进行make clean**
+
+### 2.1 模拟器使用
+
+模拟器仅用于在PC上Ubuntu下的模拟运行，可以以命令行的方式，提供基本的DIO操作，ADC控制（根据调试需求，持续完善中），这些操作的结果，将被记录于数据库中。在其它的模块读取DIO的结果时，可以反应出来。
+
+编译与运行（需要redis的支持）
+
+```shell
+cd simulator
+make
+ ./simulator.out
+```
+
+运行之后可以进入模拟器的命令模式，输入help可查看所支持的命令模式
+
+```shell
+------ DTU Simulator v1.0.0 (Dec 14 2020 10:12:52) ------
+DTU > help
+?        - Print all shell commands
+help     - Print all shell commands
+q        - quit
+dbset    - Set Database key-value
+dbget    - Get Database key-value
+lsdi     - List DI status
+lsdo     - List DO status
+setdo    - Set DO status to 1
+setdi    - Set DI status to 1
+clrdo    - Clear DO status to 0
+clrdi    - Clear DI status to 0
+togdo    - Toggle DO status
+togdi    - Toggle DI status
+DTU >
+```
+
+
+
+### 2.2 M4相关的保护与计算
+
+M4相关的部分只设置了两个函数，中断处理和主进程，对应的函数入口于relay_isr.c和relay_main.c中，相应的头文件位于m4/relay/inc中。
+
+编译：
+
+```shell
+cd dtu_apps/m4
+make
+./m4firm.out
+```
+
+将会生成**m4firm.out**文件，可直接在ubuntu环境下运行，常见的C函数都可以使用。
+
+### 2.3 协议进程
+
+
 

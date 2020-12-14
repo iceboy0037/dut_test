@@ -55,7 +55,9 @@ void adc_sample_thread(void *p)
 			adc_sample_buf[sample_points % adc_buff_count][i] = val;
 		}
 		if (sample_points > 0 && (sample_points % sample_points) == 0) {
+			#ifdef M4FIRMWARE			
 			relay_isr();
+			#endif
 		}
 		
 		usleep(sample_delay);

@@ -62,7 +62,7 @@ VPATH =
 	@$(CC) -c $(AFLAGS) $(DEF) -D_asm $< -o $@
 
 $(TARGET):$(OBJS)
-	$(CC) $(SOFLAGS) -o $@ $(OBJS) $(LIBS)
+	@$(CC) $(SOFLAGS) -o $@ $(OBJS) $(LIBS)
 
 clean:
 	@$(RM) $(TARGET)

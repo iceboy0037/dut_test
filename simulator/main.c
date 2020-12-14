@@ -18,6 +18,7 @@
 #include "main.h"
 #include "devs.h"
 #include "rdb.h"
+#include "dio.h"
 
 static char line_buffer[SHELL_LINE_BUFF_LEN];
 static char cmd_buffer[SHELL_CMD_PARAM_CNT_MAX][SHELL_CMD_PARAM_LEN_MAX];

@@ -22,6 +22,7 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include "dtu_types.h"
 #include "dtu_config.h"

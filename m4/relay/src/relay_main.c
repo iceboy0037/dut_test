@@ -13,6 +13,7 @@
  */
 
 #include "dtu.h"
+#include "adc.h"
 
 /**
  * @brief relay main entry
@@ -23,7 +24,8 @@ int relay_main(void)
 	adc_start();
 	
 	while (1) {
-		
+		sleep(1);
+		dbg("relay_main....\n");
 	}
 	
 	return 0;
