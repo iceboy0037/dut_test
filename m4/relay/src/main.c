@@ -23,7 +23,10 @@
  */
 int main(int argc, char *argv[])
 {
-	adc_init(ADC_GRID_FREQ_DEFAULT, ADC_WAVE_SAMPLE_POINT);
-
+	extern int relay_main(void);
+	
+	printf("Relay Entry...\n");
+	adc_init(ADC_GRID_FREQ_DEFAULT, ADC_WAVE_SAMPLE_POINT);	
+	relay_main();
 	return 0;
 }

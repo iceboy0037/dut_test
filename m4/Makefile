@@ -11,6 +11,7 @@ exclude_dirs += ../doc
 
 include_dirs = -I./
 include_dirs += -I./inc
+include_dirs += -I./src
 include_dirs += -I../common
 include_dirs += -I../common/inc
 
@@ -58,6 +59,7 @@ VPATH =
 	@$(CC) -c $(AFLAGS) $(DEF) -D_asm $< -o $@
 
 $(TARGET):$(OBJS)
+	export LD_LIBRARY_PATH=/usr/local/lib/
 	@$(CC) $(SOFLAGS) -o $@ $(OBJS) $(LIBS)
 
 clean:

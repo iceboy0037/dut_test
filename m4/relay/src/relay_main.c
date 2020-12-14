@@ -12,12 +12,19 @@
  * </table>
  */
 
+#include "dtu.h"
+
 /**
  * @brief relay main entry
  * @return int 0 - success
  */
 int relay_main(void)
 {
+	adc_start();
+	
+	while (1) {
+		
+	}
+	
 	return 0;
 }
-

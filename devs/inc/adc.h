@@ -22,18 +22,50 @@
 
 /**
  * @brief Init ADC peripheral
- * @param  freq		Grid frequency
+ * @param  grid		Grid frequency
  * @param  count	ADC Sample count per period
  * @return int		0 - success 
  */
-extern int adc_init(int freq, int count);
+extern int adc_init(int grid, int count);
 
 /**
  * @brief Get Current Grid frequency from FPGA
  * @param  freq		Store freq from FPGA
  * @return int 		0 - success
  */
-int adc_get_freq(float *freq);
+int adc_get_grid_freq(float *grid_freq);
 
+/**
+ * @brief Set ADC sample buffer count
+ * @param  cnt	Default = 4
+ * @return int 0 - success
+ */
+int adc_set_buff_count(int cnt);
+
+/**
+ * @brief Read ADC sample buffer count
+ * @param  cnt	Return value
+ * @return int 0 - success
+ */
+int adc_get_buff_count(int *cnt);
+
+/**
+ * @brief Read ADC Buffer
+ * @param  buf	Return ADC sample buffer, point count = adc_get_buff_count()
+ * @return int 
+ */
+int adc_get(short *buf);
+
+/**
+ * @brief Start ADC sample, M4's relay_isr() will be called every adc_get_buff_count() points
+ * @return int 
+ */
+int adc_start(void);
+
+/**
+ * @brief Stop ADC sample, and relay_isr() will be stop
+ * @return int 
+ */
+int adc_stop(void);
 
 #endif

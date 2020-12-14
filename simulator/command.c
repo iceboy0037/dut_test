@@ -16,6 +16,7 @@
 #include "devs.h"
 #include "rdb.h"
 #include "dbg.h"
+#include "dio.h"
 
 int shell_cmd_lsdi(int argc, char *argv)
 {

@@ -18,8 +18,14 @@
 extern "C" {
 #endif
 
+#include <math.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+
 #include "dtu_types.h"
 #include "dtu_config.h"
+#include "dbg.h"
 
 #ifdef __cplusplus
 }

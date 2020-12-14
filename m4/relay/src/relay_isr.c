@@ -12,10 +12,17 @@
  * </table>
  */
 
+#include "dtu.h"
+#include "adc.h"
+
+
+static short adc_buf[ADC_BUF_COUNT_DEFAULT][CONFIG_ADC_CHANNEL_NUMBER];
+
 /**
- * @brief M4 Interrupt proce
+ * @brief M4 Interrupt process
  */
 void relay_isr(void)
 {
-
+	dbg("ISR\n");
+	adc_get((short *)adc_buf);
 }

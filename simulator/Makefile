@@ -22,6 +22,8 @@ include_dirs += -I./dbs/inc
 include_dirs += -I./devs
 include_dirs += -I./devs/inc
 
+export LD_LIBRARY_PATH=/usr/local/lib/
+
 ######################################################################################################################
 CC = $(CROSS_COMPILE)gcc
 CXX = $(CROSS_COMPILE)g++

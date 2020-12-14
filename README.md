@@ -70,3 +70,5 @@ make && make install
 #include <hiredis/hiredis.h>
 ```
 
+## 二、模拟器
+
