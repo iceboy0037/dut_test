@@ -37,6 +37,7 @@ void adc_sample_thread(void *p)
 	short val;
 	float pi = 3.1415926;	
 	int wave_count = 0;
+	long long count = 0;
 	extern void relay_isr(void);
 	
 	while (1) {
@@ -50,11 +51,11 @@ void adc_sample_thread(void *p)
 		}
 		val = (short)(sin(2 * pi * wave_count / sample_points) * 32768);
 		
-		sample_points++;
+		count++;
 		for (int i = 0; i < CONFIG_ADC_CHANNEL_NUMBER; i++) {
-			adc_sample_buf[sample_points % adc_buff_count][i] = val;
+			adc_sample_buf[count % adc_buff_count][i] = val;
 		}
-		if (sample_points > 0 && (sample_points % sample_points) == 0) {
+		if (count > 0 && (count % adc_buff_count) == 0) {
 			#ifdef M4FIRMWARE			
 			relay_isr();
 			#endif
@@ -135,10 +136,7 @@ int adc_get_buff_count(int *cnt)
 int adc_get(short *buf)
 {
 #ifdef SIMULATOR
-	for (int i = 0; i < adc_buff_count; i++) {
-		memcpy(buf + CONFIG_ADC_CHANNEL_NUMBER * sizeof(short), 
-			adc_sample_buf[i], CONFIG_ADC_CHANNEL_NUMBER * sizeof(short));
-	}	
+	memcpy(buf, adc_sample_buf, sizeof(adc_sample_buf));	
 #endif
 	return 0;
 }

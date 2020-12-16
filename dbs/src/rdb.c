@@ -73,7 +73,6 @@ int rdb_hget(const char *key, const char *filed, char *value)
 {
 	const char *argv[3];
 	size_t argvlen[3];
-
 	int ret = FALSE;
 
 	argv[0] 	= "HGET";

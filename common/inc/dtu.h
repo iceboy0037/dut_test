@@ -26,7 +26,9 @@ extern "C" {
 
 #include "dtu_types.h"
 #include "dtu_config.h"
+#include "dtu_limits.h"
 #include "dbg.h"
+#include "common.h"
 
 #ifdef __cplusplus
 }

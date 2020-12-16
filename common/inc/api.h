@@ -8,8 +8,7 @@
  * @par History:
  * <table>
  * <tr><th>Date       <th>Version <th>Author  <th>Description
- * <tr><td>2020-12-11 <td>1.0     <td>rock     <td>内容
- * <tr><td>2020-12-11 <td>1.0     <td>rock     <td>内容
+ * <tr><td>2020-12-11 <td>1.0     <td>rock     <td>
  * </table>
  */
 #ifndef __API_H__

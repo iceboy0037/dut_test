@@ -23,6 +23,9 @@ static short adc_buf[ADC_BUF_COUNT_DEFAULT][CONFIG_ADC_CHANNEL_NUMBER];
  */
 void relay_isr(void)
 {
-	dbg("ISR\n");
 	adc_get((short *)adc_buf);
+	printf("%d\n", adc_buf[0][0]);
+	printf("%d\n", adc_buf[1][0]);
+	printf("%d\n", adc_buf[2][0]);
+	printf("%d\n", adc_buf[3][0]);
 }
