@@ -42,6 +42,16 @@ typedef unsigned int uint32;
 typedef unsigned short uint16;
 typedef unsigned char uint8;
 
+#if defined SIMULATOR
+#include <stddef.h>
+#else
+#if defined M4FIRMWARE
+#elif (defined A9APP)
+#include <stddef.h>
+#elif
+#endif
+#endif
+
 #ifdef __cplusplus
 }
 #endif

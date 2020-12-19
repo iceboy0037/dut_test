@@ -8,7 +8,7 @@
  * @par History:
  * <table>
  * <tr><th>Date       <th>Version <th>Author  <th>Description
- * <tr><td>2020-12-16 <td>1.0     <td>rock     <td>Modify Content
+ * <tr><td>2020-12-16 <td>1.0     <td>rock     <td>Create
  * </table>
  */
 #ifndef __RELAY_TYPES_H__
@@ -19,15 +19,7 @@ extern "C" {
 
 #include "dtu.h"
 
-/**
- * @brief 实时遥测项结构
- */
-struct yc_item_t {
-	float	rating;		// 额定值
-	float	raw;		// 原始值
-	float	output;		// 原始值1次值
-	int	q;		// 品质
-};
+
 
 /**
  * @brief 母线遥测数据，电压线

@@ -18,6 +18,26 @@
 extern "C" {
 #endif
 
+#if defined SIMULATOR
+	#define println				printf
+	#define logd				printf
+	#define flushout			fflush
+#else
+	#if defined M4FIRMWARE
+		#define	println
+		#define logd
+		#define flushout
+	#elif defined A9APP
+		#define println			printf
+		#define logd			printf	
+		#define flushout
+	#endif
+	#ifdef A9KERNEL
+		#define println			printk
+		#define logd			printf
+		#define flushout
+	#endif
+#endif
 //
 #define LOG_EMERG	"<0>"
 #define LOG_ALERT	"<1>"
@@ -32,18 +52,56 @@ extern "C" {
 
 int plog(int level, char *fmt, ...);
 
-#define __DEBUG__			1
+#define __DEBUG__		1
 
 #if __DEBUG__
 #define dbg(fmt, args...)       do {\
-		printf("[Line:%d]Func-%s:", __LINE__, __FUNCTION__);\
-		printf(fmt, ##args);\
+		println("[Line:%d]Func-%s:", __LINE__, __FUNCTION__);\
+		println(fmt, ##args);\
 		fflush(stdout);\
 	} while (0)
 #else
 #define dbgInit(name)
 #define dbg
 #endif
+
+#define PRINT_HEX	0
+#define PRINT_DEC 	1
+
+/**
+ * @brief Printf float array
+ * @param  buf memory buffer entry
+ * @param  len size in floats
+ * @return int
+ */
+extern int print_float(float *buf, int len);
+
+/**
+ * @brief Print memory buffer
+ * @param  buf	memory buffer entry
+ * @param  len	size in ints
+ * @param  type	PRINT_DEC or PRINT_HEX
+ * @return int 0 - success
+ */
+extern int print_int32(int *buf, int len, int type);
+
+/**
+ * @brief Print memory buffer
+ * @param  buf	memory buffer entry
+ * @param  len	size in short
+ * @param  type	PRINT_DEC or PRINT_HEX
+ * @return int 0 - success
+ */
+extern int print_int16(short *buf, int len, int type);
+
+/**
+ * @brief Print memory buffer
+ * @param  buf	memory buffer entry
+ * @param  len	size in bytes
+ * @param  type	PRINT_DEC or PRINT_HEX
+ * @return int 0 - success
+ */
+extern int print_buf(char *buf, int len, int type);
 
 #ifdef __cplusplus
 }
