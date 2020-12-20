@@ -27,6 +27,8 @@ extern "C" {
 #include "dtu_types.h"
 #include "dtu_config.h"
 #include "dtu_limits.h"
+#include "dtu_param.h"
+#include "dtu_time.h"
 #include "dtu_data.h"
 #include "dbg.h"
 #include "common.h"

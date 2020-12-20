@@ -1,7 +1,7 @@
 TARGET = ./protocol.out
 CROSS_COMPILE =
 DEBUG=
-DEF = -DSIMULATOR -DIEC104 -DIEC101
+DEF = -DSIMULATOR -DIEC104 -DIEC101 -DA9APP
 
 exclude_dirs = $(wildcard ./.git )
 exclude_dirs += $(wildcard ./.git/* )

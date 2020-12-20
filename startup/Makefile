@@ -1,5 +1,5 @@
-TARGET = ./sys.out
-CROSS_COMPILE = 
+TARGET = ./startup.out
+CROSS_COMPILE =
 DEBUG=
 DEF = -DSIMULATOR -DA9APP
 
@@ -39,7 +39,7 @@ AFLAG=-Wall
 CFLAGS = -O0 $(DEBUG) -Wall -g $(include_dirs)
 
 AFLAGS = -g -Wall
-SOFLAGS = 
+SOFLAGS =
 
 all_dirs = $(shell find . -maxdepth 4 -type d)
 link_dir = $(shell find . -maxdepth 4 -type l)
