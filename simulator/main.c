@@ -1,6 +1,6 @@
 /**
  * @file main.c
- * @brief 
+ * @brief
  * @author rock (gllier@163.com)
  * @version 1.0
  * @date 2020-12-11
@@ -19,6 +19,7 @@
 #include "devs.h"
 #include "rdb.h"
 #include "dio.h"
+#include "dtu_yc.h"
 
 static char line_buffer[SHELL_LINE_BUFF_LEN];
 static char cmd_buffer[SHELL_CMD_PARAM_CNT_MAX][SHELL_CMD_PARAM_LEN_MAX];
@@ -94,20 +95,20 @@ void safe_flush(FILE *fp)
 	while ((ch = fgetc(fp)) != EOF && ch != '\n');
 }
 /**
- * @brief 
+ * @brief
  * @param 	 param 	Desc.
  */
 void shell_task(void *param)
 {
 	int argc;
-	
+
 	shell_printf((char *)"\n------ DTU Simulator %s (%s %s) ------\n", SHELL_VERSION, __DATE__, __TIME__);
 	while (1) {
 		shell_printf(SHELL_PROMPT);
 		if (scanf("%[^\n]%*c", line_buffer) == 0) {
 			// read line with ENTER end, and flush input buffer
 			//continue;
-		}    
+		}
 
 		if (strlen(line_buffer) == 0) {
 			safe_flush(stdin);
@@ -124,10 +125,10 @@ void shell_task(void *param)
 	}
 }
 /**
- * @brief 
+ * @brief
  * @param 	 argc 	Desc.
  * @param 	 argv 	Desc.
- * @return int 
+ * @return int
  */
 int shell_print_args(int argc, char *argv)
 {
@@ -197,7 +198,7 @@ void shell_init(void)
 {
 }
 
-void simulator_init(void) 
+void simulator_init(void)
 {
 	rdb_init();
 	sim_devs_init();
@@ -228,12 +229,15 @@ struct cmd_tbl_s *shell_get_cmd_entry_section(void)
 
 /**
  * @brief Simulator entry point
- * @param  argc        
- * @param  argv	
- * @return int 
+ * @param  argc
+ * @param  argv
+ * @return int
  */
 int main(int argc, char *argv[])
 {
+	for (int i = 0; i < 10; i++) {
+		printf("%s\n", YC_ID(i));
+	}
 	simulator_init();
 	shell_init();
 	shell_task(NULL);

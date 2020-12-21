@@ -33,6 +33,8 @@ extern "C" {
 #include "dbg.h"
 #include "common.h"
 
+#include "dtu_yc.h"
+
 #ifdef __cplusplus
 }
 #endif

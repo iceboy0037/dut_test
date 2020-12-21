@@ -56,7 +56,8 @@ enum yc_id {
 /**
  * @brief 实时遥测项结构
  */
-struct yc_item_t {
+struct yc_value_t {
+	int 	pt_id;		// 点位ID号
 	float	rating;		// 额定值
 	float	raw;		// 原始值
 	float	output;		// 原始值1次值
@@ -64,41 +65,53 @@ struct yc_item_t {
 };
 
 /**
+ * @brief 遥测点位描述结构体
+ */
+struct yc_desc_t {
+	int	pt_id;			// 点位ID号
+	int	dev_id;			// 设备ID号
+	int	fun;			// 功能号
+	int	inf;			// 信息编号
+	int	ratio;			// 系数
+	char	desc[POINT_DESC_LEN];	// 描述字符串
+};
+
+/**
  * @brief 母线遥测数据，电压线
  */
 struct yc_bus_t {
-	struct yc_item_t ua;
-	struct yc_item_t ub;
-	struct yc_item_t uc;
-	struct yc_item_t uab;
-	struct yc_item_t ubc;
-	struct yc_item_t u0;
-	struct yc_item_t f;
+	struct yc_value_t ua;
+	struct yc_value_t ub;
+	struct yc_value_t uc;
+	struct yc_value_t uab;
+	struct yc_value_t ubc;
+	struct yc_value_t u0;
+	struct yc_value_t f;
 };
 
 /**
  * @brief 线路遥测数据结构定义，电流线
  */
 struct yc_line_t {
-	struct yc_item_t ia;
-	struct yc_item_t ib;
-	struct yc_item_t ic;
-	struct yc_item_t i0;
-	struct yc_item_t p;
-	struct yc_item_t q;
-	struct yc_item_t s;
-	struct yc_item_t cos;
+	struct yc_value_t ia;
+	struct yc_value_t ib;
+	struct yc_value_t ic;
+	struct yc_value_t i0;
+	struct yc_value_t p;
+	struct yc_value_t q;
+	struct yc_value_t s;
+	struct yc_value_t cos;
 };
 
 /**
  * @brief 母线保护遥测
  */
 struct yc_relay_bus_t {
-	struct yc_item_t ua;
-	struct yc_item_t ub;
-	struct yc_item_t uc;
-	struct yc_item_t uab;
-	struct yc_item_t ubc;
+	struct yc_value_t ua;
+	struct yc_value_t ub;
+	struct yc_value_t uc;
+	struct yc_value_t uab;
+	struct yc_value_t ubc;
 };
 
 /**
@@ -125,10 +138,10 @@ struct yc_misc_t {						// 其它遥测值
 
 // 总遥测表结构
 struct yc_table_t {
-    struct yc_bus_t 		bus[BUS_NUMBER_MAX];		// 母线电压遥测
-    struct yc_line_t 		line[LINE_NUMBER_MAX];		// 线路遥测结构表
-    struct yc_relay_bus_t	rbus[BUS_NUMBER_MAX]; 		// 保护遥测值
-    struct yc_relay_line_t	rline[LINE_NUMBER_MAX];		// 保护线路遥测值
+	struct yc_bus_t		bus[BUS_NUMBER_MAX];		// 母线电压遥测
+	struct yc_line_t 	line[LINE_NUMBER_MAX];		// 线路遥测结构表
+	struct yc_relay_bus_t	rbus[BUS_NUMBER_MAX]; 		// 保护遥测值
+	struct yc_relay_line_t	rline[LINE_NUMBER_MAX];		// 保护线路遥测值
 };
 
 extern struct yc_table_t yc_tbl;				// 电气遥测表

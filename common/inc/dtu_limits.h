@@ -27,6 +27,7 @@ extern "C" {
 #define	MAX_TRAN_DO		256	// 遥控参数
 #define MAX_TRAN_DD		256	// 电度参数
 
+#define POINT_DESC_LEN		32	// 点位描述字符串长度
 
 #ifdef __cplusplus
 }
