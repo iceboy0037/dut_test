@@ -14,12 +14,24 @@
 
 #include "dtu.h"
 
-int yc_save(struct yc_item_t *item, enum yc_id id)
+struct yc_desc_t yc_desc_list[DTU_YC_LIST_MAX];
+s
+int yc_save(struct yc_value_t *item, enum yc_id id)
 {
 	return 0;
 }
 
-int yc_read(struct yc_item_t *item)
+int yc_read_item(struct yc_value_t *item, int pt_id)
+{
+	return 0;
+}
+
+int yc_read_list(struct yc_value_t *list, int start, int len)
+{
+	return 0;
+}
+
+int yc_save_all(struct yc_table_t *tbl)
 {
 	return 0;
 }

@@ -76,6 +76,14 @@ struct yc_desc_t {
 	char	desc[POINT_DESC_LEN];	// 描述字符串
 };
 
+
+/**
+ * @brief 遥测点位与遥测描述映射表
+ */
+struct yc_map_t {
+	struct yc_desc_t *desc;
+	struct yc_value_t *value;
+};
 /**
  * @brief 母线遥测数据，电压线
  */
