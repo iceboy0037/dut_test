@@ -14,8 +14,18 @@
 
 #include "dtu.h"
 
-struct yc_desc_t yc_desc_list[DTU_YC_LIST_MAX];
-s
+static struct yc_desc_t yc_desc_list[DTU_YC_LIST_MAX];	// 本机遥测描述列表
+
+/**
+ * @brief Create YC desc list from DB
+ * @param  dev_id	Device ID
+ * @return int		0 - success
+ */
+int init_desc_list(int dev_id)
+{
+	return 0;
+}
+
 int yc_save(struct yc_value_t *item, enum yc_id id)
 {
 	return 0;
