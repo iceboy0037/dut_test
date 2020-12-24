@@ -72,7 +72,7 @@ struct yc_desc_t {
 	int	dev_id;			// 设备ID号
 	int	fun;			// 功能号
 	int	inf;			// 信息编号
-	int	ratio;			// 系数
+	float	ratio;			// 系数
 	char	desc[POINT_DESC_LEN];	// 描述字符串
 };
 
