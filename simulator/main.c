@@ -235,9 +235,6 @@ struct cmd_tbl_s *shell_get_cmd_entry_section(void)
  */
 int main(int argc, char *argv[])
 {
-	for (int i = 0; i < 10; i++) {
-		printf("%s\n", YC_ID(i));
-	}
 	simulator_init();
 	shell_init();
 	shell_task(NULL);

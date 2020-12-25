@@ -18,16 +18,16 @@
 extern "C" {
 #endif
 
-
 #define	BUS_NUMBER_MAX		(4)	        // 最大母线数量
 #define LINE_NUMBER_MAX 	(16)	        // 最大线路数量
 
-#define	MAX_TRAN_AI		256	        // 遥测参数
-#define MAX_TRAN_DI		256	        // 遥信参数
-#define	MAX_TRAN_DO		256	        // 遥控参数
-#define MAX_TRAN_DD		256	        // 电度参数
+#define	MAX_TRAN_AI		2560	        // 遥测参数
+#define MAX_TRAN_DI		2560	        // 遥信参数
+#define	MAX_TRAN_DO		2560	        // 遥控参数
+#define MAX_TRAN_DD		2560	        // 电度参数
 
-#define POINT_DESC_LEN		32	        // 点位描述字符串长度
+#define TYPE_STR_LENGTH		16		// 数据类型字符串长度
+#define POINT_DESC_LENGTH	32	        // 点位描述字符串长度
 #define DTU_YC_LIST_MAX         256             // 本机遥测点位最大数量
 #define POINT_UNUSED            "UNUSED"
 

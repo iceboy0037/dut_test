@@ -14,7 +14,7 @@
 
 #include "dtu.h"
 
-static struct yc_desc_t yc_desc_list[DTU_YC_LIST_MAX];	// 本机遥测描述列表
+static struct yc_desc_t *yc_desc_list;	// 本机遥测描述列表
 
 /**
  * @brief Create YC desc list from DB

@@ -8,7 +8,7 @@
  * @par History:
  * <table>
  * <tr><th>Date       <th>Version <th>Author  <th>Description
- * <tr><td>2020-12-19 <td>1.0     <td>rock     <td>Modify Content
+ * <tr><td>2020-12-19 <td>1.0     <td>rock     <td>
  * </table>
  */
 #ifndef __DTU_DATA_H__
@@ -17,47 +17,25 @@
 extern "C" {
 #endif
 
-enum yc_id {
-	UA1 	= 0x01,
-	UB1,
-	UC1,
-	UAB1,
-	UBC1,
-	UZ1,
-	F1,
-
-	UA2 	= 0x11,
-	UB2,
-	UC2,
-	UAB2,
-	UBC2,
-	UZ2,
-	F2,
-
-	IA1 	= 0x21,
-	IB1,
-	IC1,
-	IZ1,
-	P1,
-	Q1,
-	S1,
-	COS1,
-
-	IA2 	= 0x31,
-	IB2,
-	IC2,
-	IZ2,
-	P2,
-	Q2,
-	S2,
-	COS2,
-};
 
 /**
- * @brief 实时遥测项结构
+ * @brief 映射结构
+ */
+struct pt_map_t {
+	char	*name;
+	char	*type;
+	void	*value;
+	void	*base;
+};
+
+#define PT_MAP_START(name)				struct pt_map_t pt_map_entry_#name = {
+#define	PT_ITEM(ptname, pttype, basetype, value)	{(ptname), (pttype), &value, container_of((&value), basetype, value)}
+#define	PT_MAP_END(name)
+
+/**
+ * @brief 实时遥测存储结构
  */
 struct yc_value_t {
-	int 	pt_id;		// 点位ID号
 	float	rating;		// 额定值
 	float	raw;		// 原始值
 	float	output;		// 原始值1次值
@@ -68,22 +46,15 @@ struct yc_value_t {
  * @brief 遥测点位描述结构体
  */
 struct yc_desc_t {
-	int	pt_id;			// 点位ID号
-	int	dev_id;			// 设备ID号
-	int	fun;			// 功能号
-	int	inf;			// 信息编号
-	float	ratio;			// 系数
-	char	desc[POINT_DESC_LEN];	// 描述字符串
+	int	ptid;				// 点位ID号
+	int	devid;				// 设备ID号
+	int	fun;				// 功能号
+	int	inf;				// 信息编号
+	float	ratio;				// 系数
+	char	type[TYPE_STR_LENGTH];		// 数据类型
+	char	desc[POINT_DESC_LENGTH];	// 描述字符串
 };
 
-
-/**
- * @brief 遥测点位与遥测描述映射表
- */
-struct yc_map_t {
-	struct yc_desc_t *desc;
-	struct yc_value_t *value;
-};
 /**
  * @brief 母线遥测数据，电压线
  */

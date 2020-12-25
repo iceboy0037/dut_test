@@ -58,7 +58,7 @@ typedef unsigned char uint8;
 #define __compiler_offsetof(a,b) __builtin_offsetof(a,b)
 #ifdef __compiler_offsetof
 #ifndef offsetof
-#define offsetof(TYPE,MEMBER) 	__compiler_offsetof(TYPE,MEMBER)
+#define offsetof(TYPE, MEMBER) 	__compiler_offsetof(TYPE,MEMBER)
 #endif
 #else
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
