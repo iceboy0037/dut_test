@@ -17,20 +17,39 @@
 extern "C" {
 #endif
 
+#define	PT_TYPE_FLOAT		(0L)
+#define	PT_TYPE_INT		(1L)
+#define	PT_TYPE_UINT		(2L)
+#define PT_TYPE_SHORT		(3L)
+#define PT_TYPE_USHORT		(4L)
+#define PT_TYPE_CHAR		(5L)
+#define	PT_TYPE_UCHAR		(6L)
+#define PT_TYPE_DOUBLE		(7L)
+#define PT_TYPE_STRING		(8L)
+#define PT_TYPE_STRUCT		(9L)
+#define PT_TYPE_INVALID		(-1L)
+
 
 /**
  * @brief 映射结构
  */
 struct pt_map_t {
 	char	*name;
-	char	*type;
-	void	*value;
-	void	*base;
+	int	type;
+	int	size;		// base struct size
+	int	offset;
 };
-
-#define PT_MAP_START(name)				struct pt_map_t pt_map_entry_#name = {
-#define	PT_ITEM(ptname, pttype, basetype, value)	{(ptname), (pttype), &value, container_of((&value), basetype, value)}
-#define	PT_MAP_END(name)
+struct pt_map_array_t {
+	char 	*name;
+	int	count;
+	struct pt_map_t *map;
+};
+#define PT_MAP_START(name)				struct pt_map_t name##_pt_map_entry[] = {
+#define	PT_ITEM(name, type, base, value)		{(name), (type), sizeof(base), offsetof(base, value)},
+#define	PT_MAP_END(name)				{NULL, PT_TYPE_INVALID, 0, 0}};\
+							struct pt_map_array_t name##_pt_array = {#name, \
+								(sizeof(name##_pt_map_entry) / sizeof(struct pt_map_t) - 1), name##_pt_map_entry};\
+							static struct pt_map_array_t *get_map_entry_##name(void) { return &name##_pt_array;}
 
 /**
  * @brief 实时遥测存储结构

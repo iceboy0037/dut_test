@@ -69,6 +69,10 @@ typedef unsigned char uint8;
 				(type *)( (char *)__mptr - offsetof(type,member) );})
 #endif
 
+#ifndef STRINGIFY
+#define STRINGIFY(a) 		#a
+#endif
+
 
 enum address_type {
 	AT_NONE,               /* no link-layer address */
@@ -85,7 +89,6 @@ enum address_type {
 	AT_VINES,              /* Banyan Vines address */
 	AT_END_OF_LIST         /* Must be last in list */
 };
-
 
 
 #ifdef __cplusplus

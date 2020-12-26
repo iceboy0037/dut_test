@@ -49,6 +49,28 @@ int rdb_init(void)
 }
 
 /**
+ * @brief query key from rdb, if query multi, only return the first
+ * @param  key key query pattern
+ * @return int >=0 - read count, <0 - failed
+ */
+int rdb_key(const char *keys, char *key_value)
+{
+	redisReply *reply = (redisReply *)redisCommand(m_ctx, keys);
+	if (reply != NULL && reply->type == REDIS_REPLY_ARRAY) {
+		if (reply->elements > 0) {
+			strncpy(key_value, reply->element[0]->str, reply->element[0]->len + 1);
+			for (int i = 0; i < reply->elements; i++) {
+				freeReplyObject(reply->element[i]);
+			}
+		} else {
+			return 0;	// empty
+		}
+		freeReplyObject(reply);
+		return 1;
+	}
+	return -1;
+}
+/**
  * @brief Hash value set
  * @param  key		hash key
  * @param  filed	object filed

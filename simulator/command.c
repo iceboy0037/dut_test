@@ -1,6 +1,6 @@
 /**
  * @file command.c
- * @brief Shell command implementation 
+ * @brief Shell command implementation
  * @author rock (gllier@163.com)
  * @version 1.0
  * @date 2020-12-13
@@ -47,11 +47,11 @@ static int shell_cmd_lsdo(int argc, char *argv)
 }
 
 static int shell_cmd_setdo(int argc, char *argv)
-{	
+{
 	int start;
 	int count;
 	int buf[CONFIG_DO_NUMBER];
-	
+
 	if (argc == 2) {
 		start = atoi(ARGV(1));
 		count = 1;
@@ -68,7 +68,7 @@ static int shell_cmd_setdo(int argc, char *argv)
 			return -1;
 		}
 	}
-	
+
 	if (argc == 3) {
 		start = atoi(ARGV(1));
 		count = atoi(ARGV(2));
@@ -87,7 +87,7 @@ static int shell_cmd_setdo(int argc, char *argv)
 			return -1;
 		}
 	}
-	
+
 	printf("Usage: setdo <start> <count>\n");
 	return -1;
 }
@@ -97,7 +97,7 @@ static int shell_cmd_setdi(int argc, char *argv)
 	int start;
 	int count;
 	int buf[CONFIG_DI_NUMBER];
-	
+
 	if (argc == 2) {
 		start = atoi(ARGV(1));
 		count = 1;
@@ -114,7 +114,7 @@ static int shell_cmd_setdi(int argc, char *argv)
 			return -1;
 		}
 	}
-	
+
 	if (argc == 3) {
 		start = atoi(ARGV(1));
 		count = atoi(ARGV(2));
@@ -133,7 +133,7 @@ static int shell_cmd_setdi(int argc, char *argv)
 			return -1;
 		}
 	}
-	
+
 	printf("Usage: setdi <start> <count>\n");
 	return -1;
 }
@@ -143,7 +143,7 @@ static int shell_cmd_clrdo(int argc, char *argv)
 	int start;
 	int count;
 	int buf[CONFIG_DO_NUMBER];
-	
+
 	if (argc == 2) {
 		start = atoi(ARGV(1));
 		count = 1;
@@ -160,7 +160,7 @@ static int shell_cmd_clrdo(int argc, char *argv)
 			return -1;
 		}
 	}
-	
+
 	if (argc == 3) {
 		start = atoi(ARGV(1));
 		count = atoi(ARGV(2));
@@ -188,7 +188,7 @@ static int shell_cmd_clrdi(int argc, char *argv)
 	int start;
 	int count;
 	int buf[CONFIG_DI_NUMBER];
-	
+
 	if (argc == 2) {
 		start = atoi(ARGV(1));
 		count = 1;
@@ -205,7 +205,7 @@ static int shell_cmd_clrdi(int argc, char *argv)
 			return -1;
 		}
 	}
-	
+
 	if (argc == 3) {
 		start = atoi(ARGV(1));
 		count = atoi(ARGV(2));
@@ -233,7 +233,7 @@ static int shell_cmd_togdo(int argc, char *argv)
 	int start;
 	int count;
 	int buf[CONFIG_DO_NUMBER];
-	
+
 	if (argc == 2) {
 		start = atoi(ARGV(1));
 		count = 1;
@@ -241,14 +241,14 @@ static int shell_cmd_togdo(int argc, char *argv)
 			printf("Start value out of range, {0 ~ %d}\n", CONFIG_DO_NUMBER - 1);
 			return -1;
 		}
-		
+
 		sim_do_get(buf, start, 1);
 		if (buf[0] == 1) {
 			buf[0] = 0;
 		} else {
 			buf[0] = 1;
 		}
-		
+
 		if (sim_do_set(buf, start, count) == 0) {
 			printf("Toggle DO %d success\n", start);
 			return 0;
@@ -257,7 +257,7 @@ static int shell_cmd_togdo(int argc, char *argv)
 			return -1;
 		}
 	}
-	
+
 	if (argc == 3) {
 		start = atoi(ARGV(1));
 		count = atoi(ARGV(2));
@@ -265,7 +265,7 @@ static int shell_cmd_togdo(int argc, char *argv)
 			printf("Out of range, {0 ~ %d}\n", CONFIG_DO_NUMBER - 1);
 			return -1;
 		}
-		
+
 		sim_do_get(buf, start, count);
 		for (int i = 0; i < count; i++) {
 			if (buf[i] == 1) {
@@ -274,7 +274,7 @@ static int shell_cmd_togdo(int argc, char *argv)
 				buf[i] = 1;
 			}
 		}
-		
+
 		if (sim_do_set(buf, start, count) == 0) {
 			printf("Toggle DO (%d ~ %d) success\n", start, start + count);
 			return 0;
@@ -292,7 +292,7 @@ static int shell_cmd_togdi(int argc, char *argv)
 	int start;
 	int count;
 	int buf[CONFIG_DI_NUMBER];
-	
+
 	if (argc == 2) {
 		start = atoi(ARGV(1));
 		count = 1;
@@ -300,14 +300,14 @@ static int shell_cmd_togdi(int argc, char *argv)
 			printf("Start value out of range, {0 ~ %d}\n", CONFIG_DI_NUMBER - 1);
 			return -1;
 		}
-		
+
 		sim_di_get(buf, start, 1);
 		if (buf[0] == 1) {
 			buf[0] = 0;
 		} else {
 			buf[0] = 1;
 		}
-		
+
 		if (sim_di_set(buf, start, count) == 0) {
 			printf("Toggle DI %d success\n", start);
 			return 0;
@@ -316,7 +316,7 @@ static int shell_cmd_togdi(int argc, char *argv)
 			return -1;
 		}
 	}
-	
+
 	if (argc == 3) {
 		start = atoi(ARGV(1));
 		count = atoi(ARGV(2));
@@ -324,7 +324,7 @@ static int shell_cmd_togdi(int argc, char *argv)
 			printf("Out of range, {0 ~ %d}\n", CONFIG_DI_NUMBER - 1);
 			return -1;
 		}
-		
+
 		sim_di_get(buf, start, count);
 		for (int i = 0; i < count; i++) {
 			if (buf[i] == 1) {
@@ -333,7 +333,7 @@ static int shell_cmd_togdi(int argc, char *argv)
 				buf[i] = 1;
 			}
 		}
-		
+
 		if (sim_di_set(buf, start, count) == 0) {
 			printf("Toggle DI (%d ~ %d) success\n", start, start + count);
 			return 0;
@@ -361,7 +361,7 @@ static int shell_cmd_dbset(int argc, char *argv)
 	return 0;
 }
 
-static int shell_cmd_dbget(int argc, char *argv) 
+static int shell_cmd_dbget(int argc, char *argv)
 {
 	char buf[RDB_REPLY_BUF_LEN] = {0};
 
@@ -376,6 +376,12 @@ static int shell_cmd_dbget(int argc, char *argv)
 	}
 	dbg("Get %s success : value = %s\n", ARGV(1), buf);
 
+	return 0;
+}
+
+static int shell_cmd_saveyc(int argc, char *argv)
+{
+	yc_save_table();
 	return 0;
 }
 #include "command.inc"
