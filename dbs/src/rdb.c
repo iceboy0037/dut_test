@@ -70,6 +70,48 @@ int rdb_key(const char *keys, char *key_value)
 	}
 	return -1;
 }
+
+int rdb_ls_key(const char *keys)
+{
+	char buf[RDB_REPLY_BUF_LEN] = {0};
+
+	redisReply *reply = (redisReply *)redisCommand(m_ctx, keys);
+	if (reply != NULL && reply->type == REDIS_REPLY_ARRAY) {
+		if (reply->elements > 0) {
+			for (int i = 0; i < reply->elements; i++) {
+				rdb_get_str(reply->element[i]->str, buf);
+				printf("%8d: %16s%16s\n", i, reply->element[i]->str, buf);
+				freeReplyObject(reply->element[i]);
+			}
+		}
+		freeReplyObject(reply);
+		return 1;
+	}
+	return -1;
+}
+
+/**
+ * @brief Get special keys count
+ * @param  keys	key query pattern.
+ * @return int
+ */
+int rdb_key_count(const char *keys)
+{
+	int count = 0;
+	redisReply *reply = (redisReply *)redisCommand(m_ctx, keys);
+
+	if (reply != NULL && reply->type == REDIS_REPLY_ARRAY) {
+		count = reply->elements;
+		if (reply->elements > 0) {
+			for (int i = 0; i < reply->elements; i++) {
+				freeReplyObject(reply->element[i]);
+			}
+		}
+		freeReplyObject(reply);
+	}
+	return count;
+}
+
 /**
  * @brief Hash value set
  * @param  key		hash key

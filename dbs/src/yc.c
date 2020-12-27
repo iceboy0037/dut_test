@@ -13,6 +13,9 @@
  */
 
 #include "dtu.h"
+#include "yc.h"
+#include "dbs.h"
+#include "tables.h"
 
 PT_MAP_START(yc)
 	PT_ITEM("ua1",		PT_TYPE_FLOAT,	struct yc_table_t, 	bus[0].ua.raw)
@@ -384,21 +387,36 @@ int yc_save_table(struct yc_table_t *base)
 	struct pt_map_array_t *entry = get_map_entry_yc();
 	struct pt_map_t *map = entry->map;
 	int count = entry->count;
-	char key[16];
-	char value[16];
+	char key[16] = { 0 };
+	char value[16] = { 0 };
 
 	for (int i = 0; i < count; i++) {
 		sprintf(key, "yc:%s:*", map->name);
-		if (rdb_key(key, key) >= 0) {
-			switch (map->type) {
-			case PT_TYPE_FLOAT:
-				sprintf(value, "%f", *(float *)((int)base + map->offset);
-				rdb_set_str(key, value);
-				break;
-			default:
-				break;
-			}
+		switch (map->type) {
+		case PT_TYPE_FLOAT:
+			sprintf(value, "%f", *(float *)((ssize_t)base + map->offset));
+			break;
+		default:
+			sprintf(value, "0");
+			break;
 		}
+		if (rdb_key(key, key) >= 0) {
+			rdb_set_str(key, value);
+		} else {
+			struct yc_desc_t desc;
+			char cmd[128];
+
+			sprintf(cmd, "select * from tbl_yc_desc where alias='%s'", map->name);
+			dbg("%s\n", cmd);
+			if (sdb_select_single(cmd, &sdb_map_yc_desc, &desc) != 0) {
+				dbg("read desc failed\n");
+				return -1;
+			}
+
+			sprintf(key, "yc:%s:%d", map->name, desc.ptid);
+			rdb_set_str(key, value);
+		}
+		map++;
 	}
 
 #else
@@ -429,9 +447,32 @@ int yc_save_by_id(void *value, int id)
 	return 0;
 }
 
-
+/**
+ * @brief Read YC by ID
+ * @param  value Return value
+ * @param  id	YC ID
+ * @return int 0 - success
+ */
 int yc_read_single(void *value, int id)
 {
+	struct yc_desc_t desc;
+	char cmd[128];
+	char buf[RDB_REPLY_BUF_LEN] = {0};
+	char key[24];
+
+	sprintf(cmd, "select * from tbl_yc_desc where ptid=%d", id);
+	dbg("%s\n", cmd);
+	if (sdb_select_single(cmd, &sdb_map_yc_desc, &desc) != 0) {
+		dbg("read desc failed\n");
+		return -1;
+	}
+
+	sprintf(key, "yc:%s:%d", desc.alias, desc.ptid);
+	if (rdb_get_str(key, buf) != TRUE) {
+		return -1;
+	}
+	*(float *)value = atof(buf);
+
 	return 0;
 }
 

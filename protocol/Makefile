@@ -33,7 +33,7 @@ MV = mv -f
 RM = rm -rf
 LN = ln -sf
 
-LIBS = -lm -lpthread -lhiredis
+LIBS = -lm -lpthread -lhiredis -lsqlite3
 CFLAG=-Wall -Wno-unused-result
 AFLAG=-Wall
 CFLAGS = -O0 $(DEBUG) -Wall -g $(include_dirs)

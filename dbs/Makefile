@@ -1,7 +1,7 @@
 TARGET = ./simulator.out
-CROSS_COMPILE = 
+CROSS_COMPILE =
 DEBUG=
-LIBS = -lm -lpthread -lhiredis
+LIBS = -lm -lpthread -lhiredis -lsqlite3
 
 exclude_dirs = $(wildcard ./.git )
 exclude_dirs += $(wildcard ./.git/* )
@@ -28,7 +28,7 @@ AFLAG=-Wall
 CFLAGS = -O0 $(DEBUG) -Wall -g $(include_dirs)
 
 AFLAGS = -g -Wall
-SOFLAGS = 
+SOFLAGS =
 
 all_dirs = $(shell find . -maxdepth 3 -type d)
 DIRS = $(filter-out $(exclude_dirs), $(all_dirs))

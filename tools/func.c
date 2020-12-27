@@ -32,9 +32,9 @@ struct pt_map_array_t {
 #define PT_MAP_START(name)				struct pt_map_t name##_pt_map_entry[] = {
 #define	PT_ITEM(name, type, base, value)		{(name), (type), sizeof(base), offsetof(base, value)},
 #define	PT_MAP_END(name)				{NULL, PT_TYPE_INVALID, 0, 0}};\
-							struct pt_map_array_t name##_pt_array = {#name, \
-								(sizeof(name##_pt_map_entry) / sizeof(struct pt_map_t) - 1), name##_pt_map_entry};\
-							static struct pt_map_array_t *get_map_entry_##name(void) { return &name##_pt_array;}
+	struct pt_map_array_t name##_pt_array = {#name, \
+		(sizeof(name##_pt_map_entry) / sizeof(struct pt_map_t) - 1), name##_pt_map_entry};\
+	static struct pt_map_array_t *get_map_entry_##name(void) { return &name##_pt_array;}
 
 /**
  * @brief 实时遥测存储结构
@@ -57,10 +57,10 @@ struct yc_bus_t {
 #define PT_TYPE_INVALID -1
 #define PT_TYPE_FLOAT 0
 PT_MAP_START(yc)
-	PT_ITEM("ua1",		PT_TYPE_FLOAT,	struct yc_bus_t, ua.rating)
-	PT_ITEM("ub1",		PT_TYPE_FLOAT,	struct yc_bus_t, ua.raw)
-	PT_ITEM("uc1",		PT_TYPE_FLOAT,	struct yc_bus_t, ua.output)
-	PT_ITEM("uab1",		PT_TYPE_FLOAT,	struct yc_bus_t, ua.q)
+PT_ITEM("ua1",		PT_TYPE_FLOAT,	struct yc_bus_t, ua.rating)
+PT_ITEM("ub1",		PT_TYPE_FLOAT,	struct yc_bus_t, ua.raw)
+PT_ITEM("uc1",		PT_TYPE_FLOAT,	struct yc_bus_t, ua.output)
+PT_ITEM("uab1",		PT_TYPE_FLOAT,	struct yc_bus_t, ua.q)
 PT_MAP_END(yc)
 
 
@@ -74,8 +74,8 @@ int rdb_connect(void)
 #define RDB_HOST			"127.0.0.1"
 #define RDB_PORT			6379
 	struct timeval timeout = { 1, 500000 }; 	// 1.5 seconds
-
 	m_ctx = redisConnectWithTimeout(RDB_HOST, RDB_PORT, timeout);
+
 	if (m_ctx == NULL || m_ctx->err) {
 		if (m_ctx) {
 			printf("Connection error: %s\n", m_ctx->errstr);
@@ -110,8 +110,10 @@ int main(int argc, char *argv[])
 	rdb_connect();
 	redisReply *reply = (redisReply *)redisCommand(m_ctx, "keys di299*");
 	printf("Type = %d\n", reply->type);
+
 	if (reply && reply->type == REDIS_REPLY_ARRAY) {
 		printf("len = %d, str = %s, elements = %d\n", reply->len, (char *)(reply->str + reply->len), reply->elements);
+
 		if (reply->elements > 0) {
 			for (int i = 0; i < reply->elements; i++) {
 				redisReply *tmp = reply->element[i];
@@ -120,5 +122,6 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
+
 	return 0;
 }

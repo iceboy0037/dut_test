@@ -1,5 +1,5 @@
 TARGET = ./m4firm.out
-CROSS_COMPILE = 
+CROSS_COMPILE =
 DEBUG=
 DEF = -DSIMULATOR -DM4FIRMWARE
 
@@ -33,13 +33,13 @@ MV = mv -f
 RM = rm -rf
 LN = ln -sf
 
-LIBS = -lm -lpthread -lhiredis
+LIBS = -lm -lpthread -lhiredis -lsqlite3
 CFLAG=-Wall -Wno-unused-result
 AFLAG=-Wall
 CFLAGS = -O0 $(DEBUG) -Wall -g $(include_dirs)
 
 AFLAGS = -g -Wall
-SOFLAGS = 
+SOFLAGS =
 
 all_dirs = $(shell find . -maxdepth 4 -type d)
 link_dir = $(shell find . -maxdepth 4 -type l)

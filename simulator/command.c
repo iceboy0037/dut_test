@@ -17,6 +17,8 @@
 #include "rdb.h"
 #include "dbg.h"
 #include "dio.h"
+#include "yc.h"
+#include "dtu_data.h"
 
 static int shell_cmd_lsdi(int argc, char *argv)
 {
@@ -381,7 +383,29 @@ static int shell_cmd_dbget(int argc, char *argv)
 
 static int shell_cmd_saveyc(int argc, char *argv)
 {
-	yc_save_table();
+	yc_save_table(&yc_tbl);
 	return 0;
 }
+static int shell_cmd_readyc(int argc, char *argv)
+{
+	float value;
+	if (argc != 2) {
+		printf("Usage: dbset <key> <value>\n");
+		return -1;
+	}
+	if (yc_read_single(&value, atoi(ARGV(1))) != 0) {
+		printf("Invalid\n");
+		return -1;
+	}
+	printf("YC %d : %f\n", atoi(ARGV(1)), value);
+	return 0;
+}
+static int shell_cmd_lsyc(int argc, char *argv)
+{
+	printf("----------------YC Status----------------\n");
+	printf("%24s%16s", "Key", "Status\n");
+	rdb_ls_key("keys yc:*");
+	return 0;
+}
+
 #include "command.inc"

@@ -9,6 +9,7 @@ BEGIN_COMMAND(shell)
 
 	ON_COMMAND("lsdi", shell_cmd_lsdi, "lsdi", "List DI status")
 	ON_COMMAND("lsdo", shell_cmd_lsdo, "lsdo", "List DO status")
+	ON_COMMAND("lsyc", shell_cmd_lsyc, "lsyc", "List all YC in RDB")
 
 	ON_COMMAND("setdo", shell_cmd_setdo, "setdo", "Set DO status to 1")
 	ON_COMMAND("setdi", shell_cmd_setdi, "setdi", "Set DI status to 1")
@@ -17,4 +18,5 @@ BEGIN_COMMAND(shell)
 	ON_COMMAND("togdo", shell_cmd_togdo, "togdo", "Toggle DO status")
 	ON_COMMAND("togdi", shell_cmd_togdi, "togdi", "Toggle DI status")
 	ON_COMMAND("saveyc", shell_cmd_saveyc, "saveyc", "Save YC table to RDB")
+	ON_COMMAND("readyc", shell_cmd_readyc, "readyc", "Read YC from RDB")
 END_COMMAND(shell)
