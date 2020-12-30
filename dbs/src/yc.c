@@ -457,7 +457,7 @@ int yc_read_single(void *value, int id)
 {
 	struct yc_desc_t desc;
 	char cmd[128];
-	char buf[RDB_REPLY_BUF_LEN] = {0};
+	char buf[RDB_VAL_LEN] = {0};
 	char key[24];
 
 	sprintf(cmd, "select * from tbl_yc_desc where ptid=%d", id);

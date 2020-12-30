@@ -14,3 +14,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "common.h"
+
+/**
+ * @brief Init watchdog
+ * @return int 0 - success
+ */
+int init_dog(void)
+{
+	return 0;
+}
+
+/**
+ * @brief kick watchdog
+ * @return int 0 - success
+ */
+int kick_dog(void)
+{
+	return 0;
+}
+
+/**
+ * @brief Enable watchdog
+ * @return int 0 - success
+ */
+int enable_dog(void)
+{
+	return 0;
+}
+
+/**
+ * @brief Disable watchdog
+ * @return int 0 - success
+ */
+int disable_dog(void)
+{
+	return 0;
+}

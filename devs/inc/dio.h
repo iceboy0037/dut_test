@@ -22,42 +22,83 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef SIMULATOR
-#include <hiredis/hiredis.h>
-struct sim_do_t {
-	int count;
-	int *buf;
-};
+#define	CHECK_DIO_RANGE()	do { \
+					if ((start > limit) || (start + count > limit)) { \
+						dbg("Out of range : 0 ~ %d\n", limit);\
+						return FAIL; \
+					} \
+				} while (0)
 
-struct sim_di_t {
-	int count;
-	int *buf;
-};
+/**
+ * @brief Get system DI Channel number
+ */
+#define	di_get_limit()		(CONFIG_DI_NUMBER)
 
-struct sim_dc_t {
-	int count;
-	int *buf;
-};
+/**
+ * @brief Get System DO Channel number
+ */
+#define	do_get_limit()		(CONFIG_DO_NUMBER)
 
-extern struct sim_do_t sim_do;
-extern struct sim_di_t sim_di;
-extern struct sim_di_t sim_pwr_di;
+/**
+ * @brief Init DIO system
+ * @param  base	DIO buffer base address
+ * @return int 0 - success
+ */
+extern int dio_init(void);
 
-extern int sim_devs_init(void);
-extern int sim_do_init(void);
-extern int sim_di_init(void);
-extern int sim_do_set(int *buf, int start, int count);
-extern int sim_do_get(int *buf, int start, int count);
-extern int sim_di_set(int *buf, int start, int count);
-extern int sim_di_get(int *buf, int start, int count);
-#else
-extern int devs_dio_init(unsigned int addr_base);
-extern int devs_dio_deinit(void);
-extern int devs_di_get(int *buf, int start, int count);
-extern int devs_do_set(int start, int count);
-extern int devs_do_clean(int start, int count);
-extern int devs_dio_dbg(void);
-#endif
+/**
+ * @brief De-Init DIO system
+ * @return int 0 - success
+ */
+extern int dio_deinit(void);
+
+/**
+ * @brief Get DI status from DI boards
+ * @param  buf DI status return buffer
+ * @param  start DI start index
+ * @param  count DI Count that wanted
+ * @return int 0 - success
+ */
+extern int di_get(int *buf, int start, int count);
+
+/**
+ * @brief Set DI value, Only valid in simulator environment
+ * @param  buf	DI buffer value
+ * @param  start Start index
+ * @param  count DI Count
+ * @return int 0 - success
+ */
+extern int di_set_buf(int *buf, int start, int count);
+
+/**
+ * @brief Set DO value
+ * @param  buf	DO buffer value
+ * @param  start Start index
+ * @param  count DO Count
+ * @return int 0 - success
+ */
+extern int do_set_buf(int *buf, int start, int count);
+
+/**
+ * @brief Set DO status
+ * @param  buf DO status return buffer
+ * @param  start DO start index
+ * @param  count DO Count that wanted
+ * @return int 0 - success
+ */
+extern int do_set(int start, int count);
+
+/**
+ * @brief Get DO status from DO buffer
+ * @param  buf DO status return buffer
+ * @param  start DO start index
+ * @param  count DO Count that wanted
+ * @return int 0 - success
+ */
+extern int do_get(int *buf, int start, int count);
+
+extern int do_clr(int start, int count);
+extern int dio_dbg(void);
 
 #ifdef __cplusplus
 }

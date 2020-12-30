@@ -20,11 +20,7 @@
 #include "dbg.h"
 
 static redisContext *m_ctx = NULL;
-/**
- * @brief Connect to RDB
- * @return int
- */
-int rdb_connect(void)
+static int rdb_connect(void)
 {
 	struct timeval timeout = { 1, 500000 }; 	// 1.5 seconds
 
@@ -37,15 +33,31 @@ int rdb_connect(void)
 			dbg("Connection error: can't allocate redis m_ctx\n");
 		}
 
-		return FALSE;
+		return FAIL;
 	}
 
-	return TRUE;
+	return SUCCESS;
 }
 
+/**
+ * @brief Init RDB database
+ * @return int
+ */
 int rdb_init(void)
 {
 	return rdb_connect();
+}
+
+/**
+ * @brief Return RDB status
+ * @return int
+ */
+int rdb_ready(void)
+{
+	if (m_ctx != NULL) {
+		return READY;
+	}
+	return NOREADY;
 }
 
 /**
@@ -73,27 +85,27 @@ int rdb_key(const char *keys, char *key_value)
 
 int rdb_ls_key(const char *keys)
 {
-	char buf[RDB_REPLY_BUF_LEN] = {0};
-
+	char buf[RDB_VAL_LEN] = { 0 };
 	redisReply *reply = (redisReply *)redisCommand(m_ctx, keys);
+
 	if (reply != NULL && reply->type == REDIS_REPLY_ARRAY) {
 		if (reply->elements > 0) {
 			for (int i = 0; i < reply->elements; i++) {
 				rdb_get_str(reply->element[i]->str, buf);
-				printf("%8d: %16s%16s\n", i, reply->element[i]->str, buf);
+				println("%8d: %16s%16s\n", i, reply->element[i]->str, buf);
 				freeReplyObject(reply->element[i]);
 			}
 		}
 		freeReplyObject(reply);
-		return 1;
+		return SUCCESS;
 	}
-	return -1;
+	return FAIL;
 }
 
 /**
  * @brief Get special keys count
  * @param  keys	key query pattern.
- * @return int
+ * @return int 0 - success
  */
 int rdb_key_count(const char *keys)
 {
@@ -117,13 +129,13 @@ int rdb_key_count(const char *keys)
  * @param  key		hash key
  * @param  filed	object filed
  * @param  value	value in string format
- * @return int
+ * @return int 0 - success
  */
 int rdb_hset(const char *key, const char *hkey, const char *value)
 {
 	redisReply *reply = (redisReply *)redisCommand(m_ctx, "HSET %s %s %s", key, hkey, value);
 	freeReplyObject(reply);
-	return TRUE;
+	return SUCCESS;
 }
 
 /**
@@ -137,7 +149,7 @@ int rdb_hget(const char *key, const char *filed, char *value)
 {
 	const char *argv[3];
 	size_t argvlen[3];
-	int ret = FALSE;
+	int ret = FAIL;
 
 	argv[0] 	= "HGET";
 	argvlen[0] 	= 4;
@@ -149,9 +161,9 @@ int rdb_hget(const char *key, const char *filed, char *value)
 
 	if (reply->type != REDIS_REPLY_NIL) {
 		strcpy(value, (char *)(reply->str + reply->len));	// Copy result
-		ret = TRUE;
+		ret = 0;
 	} else {
-		ret = FALSE;
+		ret = FAIL;
 	}
 
 	freeReplyObject(reply);
@@ -160,9 +172,9 @@ int rdb_hget(const char *key, const char *filed, char *value)
 
 /**
  * @brief Get Normal key value
- * @param  key
- * @param  value
- * @return int
+ * @param  key RDB key string
+ * @param  value RDB return value string
+ * @return int 0 - success
  */
 int rdb_get_str(char *key, char *value)
 {
@@ -171,11 +183,11 @@ int rdb_get_str(char *key, char *value)
 	if (reply && reply->type == REDIS_REPLY_STRING) {
 		strcpy(value, reply->str);
 		freeReplyObject(reply);
-		return TRUE;
+		return SUCCESS;
 	}
 
 	dbg("get redis fail: %s\n", key);
-	return FALSE;
+	return FAIL;
 }
 
 int rdb_set_str(char *key, char *value)
@@ -184,21 +196,21 @@ int rdb_set_str(char *key, char *value)
 
 	if (reply) {
 		freeReplyObject(reply);
-		return TRUE;
+		return SUCCESS;
 	}
 
 	dbg("Set redis fail: %s\n", key);
-	return FALSE;
+	return FAIL;
 }
 
 int rdb_del(const char *key)
 {
-	int res = FALSE;
+	int res = FAIL;
 	redisReply *reply = (redisReply *)redisCommand(m_ctx, "DEL %s", key);
 
 	if (reply->type == REDIS_REPLY_INTEGER) {
 		if (reply->integer == 1) {
-			res = TRUE;
+			res = 0;
 		}
 	}
 
@@ -208,11 +220,11 @@ int rdb_del(const char *key)
 int rdb_exists(const char *key)
 {
 	redisReply *reply = (redisReply *)redisCommand(m_ctx, "exists %s", key);
-	int res = FALSE;
+	int res = FAIL;
 
 	if (reply->type == REDIS_REPLY_INTEGER) {
 		if (reply->integer == 1L) {
-			res  = TRUE;
+			res  = SUCCESS;
 		}
 	}
 

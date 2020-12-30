@@ -28,7 +28,7 @@ enum MU_CMD {
 	MSG,
 	SET_DO,
 	CLN_DO,
-	FEED_DOG,
+	KICK_DOG,
 	ERR_MU_CMD,
 };
 
@@ -43,7 +43,7 @@ enum MSG_STATUS {
 
 #ifdef M4FIRMWARE
 extern void m4_mu_handler(void);
-extern int feed_dog(void);
+extern int kick_dog(void);
 #endif
 #endif
 #endif // !__MU_H__

@@ -42,7 +42,8 @@ struct pt_map_array_t {
 
 #define RDB_HOST			"127.0.0.1"
 #define RDB_PORT			6379
-#define RDB_REPLY_BUF_LEN		32
+#define RDB_VAL_LEN			32
+#define	RDB_KEY_LEN			32
 
 #define CHECK_FREE_REDIS_REPLY(reply) \
 	if (reply) {\
@@ -51,7 +52,6 @@ struct pt_map_array_t {
 		dbg("freeReplyObject Fail\n");\
 	}
 
-extern int rdb_connect(void);
 extern int rdb_init(void);
 extern int rdb_hset(const char *key, const char *hkey, const char *value);
 extern int rdb_hget(const char *key, const char *filed, char *value);

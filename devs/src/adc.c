@@ -97,7 +97,8 @@ int adc_init(int grid, int points)
 		dbg("Create sample thread failed\n");
 		return -1;
 	}
-
+#else
+	// TODO : call from M4 or A9
 #endif
 	return 0;
 }
@@ -111,6 +112,8 @@ int adc_get_grid_freq(float *grid)
 {
 #ifdef SIMULATOR
 	*grid = grid_freq;
+#else
+	// TODO : call from M4 or A9
 #endif
 	return 0;
 }

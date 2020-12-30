@@ -8,7 +8,8 @@
  * @par History:
  * <table>
  * <tr><th>Date       <th>Version <th>Author  <th>Description
- * <tr><td>2020-12-13 <td>1.0     <td>rock     <td>Modify Content
+ * <tr><td>2020-12-13 <td>1.0     <td>rock     <td>Create
+ * <tr><td>2020-12-30 <td>1.0     <td>rock     <td>Merge Simulator and HW interface
  * </table>
  */
 #include "simulator.h"
@@ -20,16 +21,24 @@
 #include "yc.h"
 #include "dtu_data.h"
 
+static int cmd_di_buf[CONFIG_DI_NUMBER];
+static int cmd_do_buf[CONFIG_DO_NUMBER];
 static int shell_cmd_lsdi(int argc, char *argv)
 {
 	int i;
+	int count = di_get_limit();
 
-	printf("----------------DI Status----------------\n");
-	printf("Seq\tStatus\n");
-	for (i = 0; i < sim_di.count; i++) {
-		printf("%d\t%d\n", i, sim_di.buf[i]);
+	if (di_get(cmd_di_buf, 0, count) != SUCCESS) {
+		dbg("Get DI Failed\n");
+		return -1;
 	}
-	printf("\n");
+
+	println("----------------DI Status----------------\n");
+	println("Seq\tStatus\n");
+	for (i = 0; i < count; i++) {
+		println("%d\t%d\n", i, cmd_di_buf[i]);
+	}
+	println("\n");
 
 	return 0;
 }
@@ -37,13 +46,19 @@ static int shell_cmd_lsdi(int argc, char *argv)
 static int shell_cmd_lsdo(int argc, char *argv)
 {
 	int i;
+	int count = do_get_limit();
 
-	printf("----------------DO Status----------------\n");
-	printf("Seq\tStatus\n");
-	for (i = 0; i < sim_do.count; i++) {
-		printf("%d\t%d\n", i, sim_do.buf[i]);
+	if (do_get(cmd_do_buf, 0, count) != SUCCESS) {
+		dbg("Get DO Failed\n");
+		return -1;
 	}
-	printf("\n");
+
+	println("----------------DO Status----------------\n");
+	println("Seq\tStatus\n");
+	for (i = 0; i < count; i++) {
+		println("%d\t%d\n", i, cmd_do_buf[i]);
+	}
+	println("\n");
 
 	return 0;
 }
@@ -53,44 +68,28 @@ static int shell_cmd_setdo(int argc, char *argv)
 	int start;
 	int count;
 	int buf[CONFIG_DO_NUMBER];
+	int limit = do_get_limit();
 
-	if (argc == 2) {
-		start = atoi(ARGV(1));
-		count = 1;
-		if (start < 0 || start > CONFIG_DO_NUMBER) {
-			printf("Start value out of range, {0 ~ %d}\n", CONFIG_DO_NUMBER - 1);
-			return -1;
-		}
-		buf[0] = 1;
-		if (sim_do_set(buf, start, count) == 0) {
-			printf("Set DO %d to 1 success\n", start);
-			return 0;
-		} else {
-			printf("Set DO %d to 1 failed\n", start);
-			return -1;
-		}
+	if (argc > 3) {
+		println("Usage: setdo <start> <count>\n");
+		return -1;
 	}
 
-	if (argc == 3) {
-		start = atoi(ARGV(1));
-		count = atoi(ARGV(2));
-		if (start < 0 || start > CONFIG_DO_NUMBER || count > (CONFIG_DO_NUMBER - start)) {
-			printf("Out of range, {0 ~ %d}\n", CONFIG_DO_NUMBER - 1);
-			return -1;
-		}
-		for (int i = 0; i < count; i++) {
-			buf[i] = 1;
-		}
-		if (sim_do_set(buf, start, count) == 0) {
-			printf("Set DO (%d ~ %d) to 1 success\n", start, start + count);
-			return 0;
-		} else {
-			printf("Set DO (%d ~ %d) to 1 failed\n", start, start + count);
-			return -1;
-		}
+	start = atoi(ARGV(1));
+	count = (argc == 2) ? 1 : atoi(ARGV(2));
+	if (start < 0 || start > limit || count > (limit - start)) {
+		println("Out of range, {0 ~ %d}\n", limit - 1);
+		return -1;
+	}
+	for (int i = 0; i < count; i++) {
+		buf[i] = 1;
+	}
+	if (do_set_buf(buf, start, count) == 0) {
+		println("Set DO (%d ~ %d) to 1 success\n", start, start + count);
+		return 0;
 	}
 
-	printf("Usage: setdo <start> <count>\n");
+	println("Set DO (%d ~ %d) to 1 failed\n", start, start + count);
 	return -1;
 }
 
@@ -99,44 +98,25 @@ static int shell_cmd_setdi(int argc, char *argv)
 	int start;
 	int count;
 	int buf[CONFIG_DI_NUMBER];
+	int limit = di_get_limit();
 
-	if (argc == 2) {
-		start = atoi(ARGV(1));
-		count = 1;
-		if (start < 0 || start > CONFIG_DI_NUMBER) {
-			printf("Start value out of range, {0 ~ %d}\n", CONFIG_DI_NUMBER - 1);
-			return -1;
-		}
-		buf[0] = 1;
-		if (sim_di_set(buf, start, count) == 0) {
-			printf("Set DI %d to 1 success\n", start);
-			return 0;
-		} else {
-			printf("Set DI %d to 1 failed\n", start);
-			return -1;
-		}
+	if (argc > 3) {
+		println("Usage: setdi <start> <count>\n");
+		return -1;
 	}
 
-	if (argc == 3) {
-		start = atoi(ARGV(1));
-		count = atoi(ARGV(2));
-		if (start < 0 || start > CONFIG_DI_NUMBER || count > (CONFIG_DI_NUMBER - start)) {
-			printf("Out of range, {0 ~ %d}\n", CONFIG_DI_NUMBER - 1);
-			return -1;
-		}
-		for (int i = 0; i < count; i++) {
-			buf[i] = 1;
-		}
-		if (sim_di_set(buf, start, count) == 0) {
-			printf("Set DI (%d ~ %d) to 1 success\n", start, start + count);
-			return 0;
-		} else {
-			printf("Set DI (%d ~ %d) to 1 failed\n", start, start + count);
-			return -1;
-		}
+	start = atoi(ARGV(1));
+	count = (argc == 2) ? 1 : atoi(ARGV(2));
+	CHECK_DIO_RANGE();
+	for (int i = 0; i < count; i++) {
+		buf[i] = 1;
+	}
+	if (di_set_buf(buf, start, count) == 0) {
+		println("Set DI (%d ~ %d) to 1 success\n", start, start + count);
+		return 0;
 	}
 
-	printf("Usage: setdi <start> <count>\n");
+	println("Set DI (%d ~ %d) to 1 failed\n", start, start + count);
 	return -1;
 }
 
@@ -145,43 +125,25 @@ static int shell_cmd_clrdo(int argc, char *argv)
 	int start;
 	int count;
 	int buf[CONFIG_DO_NUMBER];
+	int limit = do_get_limit();
 
-	if (argc == 2) {
-		start = atoi(ARGV(1));
-		count = 1;
-		if (start < 0 || start > CONFIG_DO_NUMBER) {
-			printf("Start value out of range, {0 ~ %d}\n", CONFIG_DO_NUMBER - 1);
-			return -1;
-		}
-		buf[0] = 0;
-		if (sim_do_set(buf, start, count) == 0) {
-			printf("Clear DO %d to 0 success\n", start);
-			return 0;
-		} else {
-			printf("Clear DO %d to 0 failed\n", start);
-			return -1;
-		}
+	if (argc > 3) {
+		println("Usage: clrdo <start> <count>\n");
+		return -1;
 	}
 
-	if (argc == 3) {
-		start = atoi(ARGV(1));
-		count = atoi(ARGV(2));
-		if (start < 0 || start > CONFIG_DO_NUMBER || count > (CONFIG_DO_NUMBER - start)) {
-			printf("Out of range, {0 ~ %d}\n", CONFIG_DO_NUMBER - 1);
-			return -1;
-		}
-		for (int i = 0; i < count; i++) {
-			buf[i] = 0;
-		}
-		if (sim_do_set(buf, start, count) == 0) {
-			printf("Clear DO (%d ~ %d) to 0 success\n", start, start + count);
-			return 0;
-		} else {
-			printf("Clear DO (%d ~ %d) to 0 failed\n", start, start + count);
-			return -1;
-		}
+	start = atoi(ARGV(1));
+	count = (argc == 2) ? 1 : atoi(ARGV(2));
+	CHECK_DIO_RANGE();
+	for (int i = 0; i < count; i++) {
+		buf[i] = 0;
 	}
-	printf("Usage: clrdo <start> <count>\n");
+	if (do_set_buf(buf, start, count) == 0) {
+		println("Clear DO (%d ~ %d) to 1 success\n", start, start + count);
+		return 0;
+	}
+
+	println("Clear DO (%d ~ %d) to 1 failed\n", start, start + count);
 	return -1;
 }
 
@@ -190,43 +152,25 @@ static int shell_cmd_clrdi(int argc, char *argv)
 	int start;
 	int count;
 	int buf[CONFIG_DI_NUMBER];
+	int limit = di_get_limit();
 
-	if (argc == 2) {
-		start = atoi(ARGV(1));
-		count = 1;
-		if (start < 0 || start > CONFIG_DI_NUMBER) {
-			printf("Start value out of range, {0 ~ %d}\n", CONFIG_DI_NUMBER - 1);
-			return -1;
-		}
-		buf[0] = 0;
-		if (sim_di_set(buf, start, count) == 0) {
-			printf("Clear DI %d to 0 success\n", start);
-			return 0;
-		} else {
-			printf("Clear DI %d to 0 failed\n", start);
-			return -1;
-		}
+	if (argc > 3) {
+		println("Usage: clrdi <start> <count>\n");
+		return -1;
 	}
 
-	if (argc == 3) {
-		start = atoi(ARGV(1));
-		count = atoi(ARGV(2));
-		if (start < 0 || start > CONFIG_DI_NUMBER || count > (CONFIG_DI_NUMBER - start)) {
-			printf("Out of range, {0 ~ %d}\n", CONFIG_DI_NUMBER - 1);
-			return -1;
-		}
-		for (int i = 0; i < count; i++) {
-			buf[i] = 0;
-		}
-		if (sim_di_set(buf, start, count) == 0) {
-			printf("Clear DI (%d ~ %d) to 0 success\n", start, start + count);
-			return 0;
-		} else {
-			printf("Clear DI (%d ~ %d) to 0 failed\n", start, start + count);
-			return -1;
-		}
+	start = atoi(ARGV(1));
+	count = (argc == 2) ? 1 : atoi(ARGV(2));
+	CHECK_DIO_RANGE();
+	for (int i = 0; i < count; i++) {
+		buf[i] = 0;
 	}
-	printf("Usage: clrdi <start> <count>\n");
+	if (di_set_buf(buf, start, count) == 0) {
+		println("Set DI (%d ~ %d) to 1 success\n", start, start + count);
+		return 0;
+	}
+
+	println("Set DI (%d ~ %d) to 1 failed\n", start, start + count);
 	return -1;
 }
 
@@ -235,57 +179,31 @@ static int shell_cmd_togdo(int argc, char *argv)
 	int start;
 	int count;
 	int buf[CONFIG_DO_NUMBER];
+	int limit = do_get_limit();
 
-	if (argc == 2) {
-		start = atoi(ARGV(1));
-		count = 1;
-		if (start < 0 || start > CONFIG_DO_NUMBER) {
-			printf("Start value out of range, {0 ~ %d}\n", CONFIG_DO_NUMBER - 1);
-			return -1;
-		}
+	if (argc > 3) {
+		println("Usage: togdo <start> [count]\n");
+	}
 
-		sim_do_get(buf, start, 1);
-		if (buf[0] == 1) {
-			buf[0] = 0;
+	start = atoi(ARGV(1));
+	count = (argc == 2) ? 1 : atoi(ARGV(2));
+	CHECK_DIO_RANGE();
+
+	do_get(buf, start, count);
+	for (int i = 0; i < count; i++) {
+		if (buf[i] == 1) {
+			buf[i] = 0;
 		} else {
-			buf[0] = 1;
-		}
-
-		if (sim_do_set(buf, start, count) == 0) {
-			printf("Toggle DO %d success\n", start);
-			return 0;
-		} else {
-			printf("Toggle DO %d failed\n", start);
-			return -1;
+			buf[i] = 1;
 		}
 	}
 
-	if (argc == 3) {
-		start = atoi(ARGV(1));
-		count = atoi(ARGV(2));
-		if (start < 0 || start > CONFIG_DO_NUMBER || count > (CONFIG_DO_NUMBER - start)) {
-			printf("Out of range, {0 ~ %d}\n", CONFIG_DO_NUMBER - 1);
-			return -1;
-		}
-
-		sim_do_get(buf, start, count);
-		for (int i = 0; i < count; i++) {
-			if (buf[i] == 1) {
-				buf[i] = 0;
-			} else {
-				buf[i] = 1;
-			}
-		}
-
-		if (sim_do_set(buf, start, count) == 0) {
-			printf("Toggle DO (%d ~ %d) success\n", start, start + count);
-			return 0;
-		} else {
-			printf("Toggle DO (%d ~ %d) failed\n", start, start + count);
-			return -1;
-		}
+	if (do_set_buf(buf, start, count) == 0) {
+		println("Toggle DO (%d ~ %d) success\n", start, start + count);
+		return 0;
 	}
-	printf("Usage: togdo <start> <count>\n");
+
+	println("Toggle DO (%d ~ %d) failed\n", start, start + count);
 	return -1;
 }
 
@@ -294,64 +212,38 @@ static int shell_cmd_togdi(int argc, char *argv)
 	int start;
 	int count;
 	int buf[CONFIG_DI_NUMBER];
+	int limit = di_get_limit();
 
-	if (argc == 2) {
-		start = atoi(ARGV(1));
-		count = 1;
-		if (start < 0 || start > CONFIG_DI_NUMBER) {
-			printf("Start value out of range, {0 ~ %d}\n", CONFIG_DI_NUMBER - 1);
-			return -1;
-		}
+	if (argc > 3) {
+		println("Usage: togdi <start> [count]\n");
+	}
 
-		sim_di_get(buf, start, 1);
-		if (buf[0] == 1) {
-			buf[0] = 0;
+	start = atoi(ARGV(1));
+	count = (argc == 2) ? 1 : atoi(ARGV(2));
+	CHECK_DIO_RANGE();
+
+	di_get(buf, start, count);
+	for (int i = 0; i < count; i++) {
+		if (buf[i] == 1) {
+			buf[i] = 0;
 		} else {
-			buf[0] = 1;
-		}
-
-		if (sim_di_set(buf, start, count) == 0) {
-			printf("Toggle DI %d success\n", start);
-			return 0;
-		} else {
-			printf("Toggle DI %d failed\n", start);
-			return -1;
+			buf[i] = 1;
 		}
 	}
 
-	if (argc == 3) {
-		start = atoi(ARGV(1));
-		count = atoi(ARGV(2));
-		if (start < 0 || start > CONFIG_DI_NUMBER || count > (CONFIG_DI_NUMBER - start)) {
-			printf("Out of range, {0 ~ %d}\n", CONFIG_DI_NUMBER - 1);
-			return -1;
-		}
-
-		sim_di_get(buf, start, count);
-		for (int i = 0; i < count; i++) {
-			if (buf[i] == 1) {
-				buf[i] = 0;
-			} else {
-				buf[i] = 1;
-			}
-		}
-
-		if (sim_di_set(buf, start, count) == 0) {
-			printf("Toggle DI (%d ~ %d) success\n", start, start + count);
-			return 0;
-		} else {
-			printf("Toggle DI (%d ~ %d) failed\n", start, start + count);
-			return -1;
-		}
+	if (di_set_buf(buf, start, count) == 0) {
+		println("Toggle DI (%d ~ %d) success\n", start, start + count);
+		return 0;
 	}
-	printf("Usage: togdi <start> <count>\n");
+
+	println("Toggle DI (%d ~ %d) failed\n", start, start + count);
 	return -1;
 }
 
 static int shell_cmd_dbset(int argc, char *argv)
 {
 	if (argc != 3) {
-		printf("Usage: dbset <key> <value>\n");
+		println("Usage: dbset <key> <value>\n");
 		return -1;
 	}
 	if (rdb_set_str(ARGV(1), ARGV(2)) != TRUE) {
@@ -365,10 +257,10 @@ static int shell_cmd_dbset(int argc, char *argv)
 
 static int shell_cmd_dbget(int argc, char *argv)
 {
-	char buf[RDB_REPLY_BUF_LEN] = {0};
+	char buf[RDB_VAL_LEN] = {0};
 
 	if (argc != 2) {
-		printf("Usage: dbset <key> <value>\n");
+		println("Usage: dbset <key> <value>\n");
 		return -1;
 	}
 
@@ -390,20 +282,20 @@ static int shell_cmd_readyc(int argc, char *argv)
 {
 	float value;
 	if (argc != 2) {
-		printf("Usage: dbset <key> <value>\n");
+		println("Usage: dbset <key> <value>\n");
 		return -1;
 	}
 	if (yc_read_single(&value, atoi(ARGV(1))) != 0) {
-		printf("Invalid\n");
+		println("Invalid\n");
 		return -1;
 	}
-	printf("YC %d : %f\n", atoi(ARGV(1)), value);
+	println("YC %d : %f\n", atoi(ARGV(1)), value);
 	return 0;
 }
 static int shell_cmd_lsyc(int argc, char *argv)
 {
-	printf("----------------YC Status----------------\n");
-	printf("%24s%16s", "Key", "Status\n");
+	println("----------------YC Status----------------\n");
+	println("%24s%16s", "Key", "Status\n");
 	rdb_ls_key("keys yc:*");
 	return 0;
 }

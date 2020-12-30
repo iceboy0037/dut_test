@@ -68,7 +68,7 @@ static void sigalrm_func(int signum)
 	dbg("M4 no alive\n");
 }
 
-static void feed_dog(void)
+static void kick_dog(void)
 {
 	int ret = 0;
 	struct itimerval value, old_value;
@@ -163,8 +163,8 @@ static int dtu_mu_msg_handler(unsigned int msg)
 
 		break;
 
-	case FEED_DOG:
-		feed_dog();
+	case KICK_DOG:
+		kick_dog();
 		break;
 
 	default:
@@ -271,7 +271,7 @@ int main(int argc, char *argv[])
 	signal(SIGIO, sigio_signal_func);
 	signal(SIGINT, sigint_func);
 	signal(SIGALRM, sigalrm_func);
-	feed_dog();
+	kick_dog();
 	ret = fcntl(fd, F_SETOWN, getpid());
 
 	if (ret < 0) {

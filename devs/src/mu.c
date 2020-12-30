@@ -42,10 +42,10 @@ int retry(int (*func)(void))
 	return ret;
 }
 
-int feed_dog(void)
+int kick_dog(void)
 {
 	int ret = 0;
-	ret = MU_TrySendMsg(MUB, MU_CH, M4 | (FEED_DOG << CMD_POS));
+	ret = MU_TrySendMsg(MUB, MU_CH, M4 | (KICK_DOG << CMD_POS));
 
 	if (ret != kStatus_MU_Success) {
 		return ret;

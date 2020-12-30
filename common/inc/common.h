@@ -18,6 +18,29 @@ extern "C" {
 #endif
 
 
+/**
+ * @brief Init watchdog
+ * @return int 0 - success
+ */
+int init_dog(void);
+
+/**
+ * @brief kick watchdog
+ * @return int 0 - success
+ */
+int kick_dog(void);
+
+/**
+ * @brief Disable watchdog
+ * @return int 0 - success
+ */
+int disable_dog(void);
+
+/**
+ * @brief Enable watchdog
+ * @return int 0 - success
+ */
+int enable_dog(void);
 
 #ifdef __cplusplus
 }

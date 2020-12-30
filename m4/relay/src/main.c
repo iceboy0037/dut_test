@@ -66,7 +66,7 @@ void BOARD_EPITB_HANDLER(void)
 		PRINTF("send now time %d\r\n", time);
 	}
 	if (time % 10 == 8) {
-		feed_dog();
+		kick_dog();
 	}
 	if (time % 10 == 5) {
 		devs_do_set(12, 1);

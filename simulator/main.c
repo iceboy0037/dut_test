@@ -202,7 +202,7 @@ void shell_init(void)
 void simulator_init(void)
 {
 	rdb_init();
-	sim_devs_init();
+	dio_init();
 }
 
 #if SHELL_COMMAND_SECTION > 0

@@ -34,12 +34,29 @@ typedef enum {
 #endif
 
 #ifndef TRUE
-#define TRUE	true
+#define TRUE		true
 #endif
 
 #ifndef FALSE
-#define FALSE	false
+#define FALSE		false
 #endif
+
+#ifndef SUCCESS
+#define SUCCESS		(0L)
+#endif
+
+#ifndef FAIL
+#define FAIL 		(-1L)
+#endif
+
+#ifndef READY
+#define READY		(1L)
+#endif
+
+#ifndef NOREADY
+#define NOREADY 	(0)
+#endif
+
 
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
