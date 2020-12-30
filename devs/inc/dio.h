@@ -21,9 +21,9 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <hiredis/hiredis.h>
 
 #ifdef SIMULATOR
+#include <hiredis/hiredis.h>
 struct sim_do_t {
 	int count;
 	int *buf;
@@ -50,6 +50,13 @@ extern int sim_do_set(int *buf, int start, int count);
 extern int sim_do_get(int *buf, int start, int count);
 extern int sim_di_set(int *buf, int start, int count);
 extern int sim_di_get(int *buf, int start, int count);
+#else
+extern int devs_dio_init(unsigned int addr_base);
+extern int devs_dio_deinit(void);
+extern int devs_di_get(int *buf, int start, int count);
+extern int devs_do_set(int start, int count);
+extern int devs_do_clean(int start, int count);
+extern int devs_dio_dbg(void);
 #endif
 
 #ifdef __cplusplus
