@@ -17,7 +17,7 @@ SET(CMAKE_STATIC_LIBRARY_SUFFIX)
 SET(CMAKE_EXECUTABLE_LIBRARY_PREFIX)
 SET(CMAKE_EXECUTABLE_LIBRARY_SUFFIX)
 
- 
+
 # CURRENT DIRECTORY
 SET(ProjDirPath ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -71,7 +71,7 @@ foreach(file ${H_SRCS_PATH})
     list(APPEND INCLUDE_DIR ${dir_path})
 endforeach()
 
-SET(DIR_SRCS  
+SET(DIR_SRCS
     # ${ProjDirPath}/..
     ${ProjDirPath}/../dev
     ${ProjDirPath}/../board
@@ -91,7 +91,7 @@ foreach(DIR ${DIR_SRCS})
     list(APPEND ALL_SRCS ${C_SRCS_PATH} ${CPP_SRCS_PATH} ${S_SRCS_PATH} ${H_SRCS_PATH})
 endforeach()
 
-ADD_EXECUTABLE(dtu_m4 
+ADD_EXECUTABLE(dtu_m4
     ${ALL_SRCS}
 )
 SET_TARGET_PROPERTIES(dtu_m4 PROPERTIES OUTPUT_NAME "dtu_m4.elf")

@@ -53,16 +53,17 @@ void adc_sample_thread(void *p)
 		}
 
 		val = (short)(sin(2 * pi * wave_count / sample_points) * 32768);
-		count++;
 
 		for (int i = 0; i < CONFIG_ADC_CHANNEL_NUMBER; i++) {
 			adc_sample_buf[count % adc_buff_count][i] = val;
 		}
 
-		if (count > 0 && (count % adc_buff_count) == 0) {
-#ifdef M4FIRMWARE
+		count++;
+
+		if ((count % adc_buff_count) == 0) {
+			#ifdef M4FIRMWARE
 			relay_isr();
-#endif
+			#endif
 		}
 
 		usleep(sample_delay);
@@ -97,8 +98,7 @@ int adc_init(int grid, int points)
 		dbg("Create sample thread failed\n");
 		return -1;
 	}
-#else
-	// TODO : call from M4 or A9
+
 #endif
 	return 0;
 }
@@ -112,8 +112,6 @@ int adc_get_grid_freq(float *grid)
 {
 #ifdef SIMULATOR
 	*grid = grid_freq;
-#else
-	// TODO : call from M4 or A9
 #endif
 	return 0;
 }

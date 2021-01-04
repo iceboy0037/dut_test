@@ -15,6 +15,11 @@
 #include <stdlib.h>
 #include "common.h"
 
+#if !defined SIMULATOR && defined M4FIRMWARE
+#include "board.h"
+#include "mu_imx.h"
+#include "mu.h"
+#endif
 /**
  * @brief Init watchdog
  * @return int 0 - success
@@ -30,6 +35,16 @@ int init_dog(void)
  */
 int kick_dog(void)
 {
+#if !defined SIMULATOR && defined M4FIRMWARE
+	int ret = 0;
+	ret = MU_TrySendMsg(MUB, MU_CH, M4 | (KICK_DOG << CMD_POS));
+
+	if (ret != kStatus_MU_Success) {
+		return ret;
+	}
+
+	return ret;
+#endif
 	return 0;
 }
 

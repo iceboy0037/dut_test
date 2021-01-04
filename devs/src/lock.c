@@ -12,40 +12,27 @@
  * <tr><td>2020-12-16 <td>1.0     <td>jiashipeng     <td>mutex lock
  * </table>
  */
-#ifndef SIMULATOR
+#if !defined SIMULATOR && defined M4FIRMWARE
 
 #include "share_memory.h"
 #include <stddef.h>
-#ifdef M4FIRMWARE
-#include <string.h>
 #include "board.h"
 #include "mu_imx.h"
 #include "debug_console_imx.h"
-#include "lmem.h"
-#else
-#include <sys/mman.h>
-#include <stdio.h>
-#endif
+#include "sema4.h"
 
-static volatile int *mem_mutex_lock_base;
-
+static uint32_t recursiveDepth;
+#define MEM_LOCK_GATE (2)
 /**
  * @brief mutex lock share memory addr init
  * @return int
  * 		0 success
  * 		-1 error
  */
-int mem_mutex_init(unsigned int addr_base)
+int mem_mutex_init(void)
 {
-	if (addr_base == 0)
-		return -1;
-
-	mem_mutex_lock_base = (volatile int *)addr_base;
-	*mem_mutex_lock_base = 0;
-	*(mem_mutex_lock_base + 1) = 0;
-#ifdef M4FIRMWARE
-	LMEM_CleanSystemCache(LMEM);
-#endif
+	SEMA4_ResetGate(BOARD_SEMA4_BASEADDR, MEM_LOCK_GATE);
+	SEMA4_ResetNotification(BOARD_SEMA4_BASEADDR, MEM_LOCK_GATE);
 	return 0;
 }
 
@@ -66,30 +53,35 @@ int mem_mutex_deinit(void)
  */
 int mem_mutex_lock(void)
 {
-	if (mem_mutex_lock_base == NULL)
-		return -1;
+	int locked = 0;
+	unsigned times = 0;
 
-#ifdef M4FIRMWARE
-	LMEM_CleanSystemCache(LMEM);
-
-	if (*mem_mutex_lock_base == 0) {
-		*(mem_mutex_lock_base + 1) += 1;
-		LMEM_CleanSystemCache(LMEM);
+	/* If already locked by this processor, just add recursive depth */
+	if (SEMA4_GetLockProcessor(BOARD_SEMA4_BASEADDR, MEM_LOCK_GATE) == SEMA4_PROCESSOR_SELF) {
+		recursiveDepth++;
 		return 0;
-	} else {
-		return -1;
 	}
 
-#else
+	while (!locked) {
+		/* Enable unlock interrupt of this gate */
+		SEMA4_SetIntCmd(BOARD_SEMA4_BASEADDR, SEMA4_GATE_STATUS_FLAG(MEM_LOCK_GATE), true);
 
-	if (*(mem_mutex_lock_base + 1) == 0) {
-		*mem_mutex_lock_base += 1;
-		return 0;
-	} else {
-		return -1;
+		if (SEMA4_TryLock(BOARD_SEMA4_BASEADDR, MEM_LOCK_GATE) == statusSema4Success) {
+			recursiveDepth++;
+			/* Got the SEMA4, unlock interrupt is not needed any more */
+			SEMA4_SetIntCmd(BOARD_SEMA4_BASEADDR, SEMA4_GATE_STATUS_FLAG(MEM_LOCK_GATE), false);
+			locked = 1;
+		}
+
+		times++;
+
+		if (times > 10) {
+			PRINTF("\n\rwaiting for the other core unlock the gate err, lock err\n\r");
+			return -1;
+		}
 	}
 
-#endif
+	return 0;
 }
 
 /**
@@ -100,23 +92,9 @@ int mem_mutex_lock(void)
  */
 int mem_mutex_unlock(void)
 {
-	if (mem_mutex_lock_base == NULL)
-		return -1;
+	if ((--recursiveDepth) == 0)
+		SEMA4_Unlock(BOARD_SEMA4_BASEADDR, MEM_LOCK_GATE);
 
-#ifdef M4FIRMWARE
-	LMEM_CleanSystemCache(LMEM);
-
-	if (*(mem_mutex_lock_base + 1) != 0) {
-		*(mem_mutex_lock_base + 1) -= 1;
-		LMEM_CleanSystemCache(LMEM);
-	}
-
-#else
-
-	if (*mem_mutex_lock_base != 0)
-		*mem_mutex_lock_base -= 1;
-
-#endif
 	return 0;
 }
 #endif

@@ -55,7 +55,14 @@ extern "C" {
 
 #if __DEBUG__
 #if !defined SIMULATOR && defined M4FIRMWARE
-	#define dbg	LOGD
+#include "msg.h"
+#include <stdio.h>
+#define dbg(fmt, args...)       do {\
+		char s[LOG_BUF_SIZE_MAX];				\
+		snprintf(s, sizeof(s), "[Line:%d]Func-%s:"fmt,		\
+			 __LINE__, __FUNCTION__, ##args);		\
+		plog(0, s, sizeof(s));					\
+	} while (0)
 #else
 #define dbg(fmt, args...)       do {\
 		println("[Line:%d]Func-%s:", __LINE__, __FUNCTION__);\

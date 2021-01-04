@@ -39,23 +39,6 @@ static int memfd = 0;
 static void *ocram_base = NULL;
 static int m4_is_alive = 1;
 
-static int mb_write(unsigned int mumsg)
-{
-	int ret = 0;
-	unsigned int msg = mumsg;
-
-	if (fd < 0) {
-		dbg("Unable to operate file\n");
-	}
-
-	ret = write(fd, (const void *)&msg, sizeof(msg));
-
-	if (ret < 0) {
-		dbg("write file err\n");
-	}
-
-	return ret;
-}
 
 int get_m4_status(void)
 {
@@ -88,7 +71,6 @@ static int dtu_msg_handler(void)
 {
 	struct msg_t *curr_msg = NULL;
 	char tmp_log[100] = {0};
-	int ret = 0;
 	curr_msg = (struct msg_t *)mq_curr_msg();
 
 	if (NULL == curr_msg)
@@ -105,22 +87,12 @@ static int dtu_msg_handler(void)
 			    (unsigned int)curr_msg->data.log.buf);
 		}
 
-		ret = mb_write(A9 | (MSG << CMD_POS) | M4_SEND_OK);
-
-		if (ret < 0)
-			dbg("mbox send msg err %d\n", ret);
-
 		break;
 
 	case EVENT:
 		dbg("m4 event type %d, value %d\n",
 		    curr_msg->data.event.type,
 		    curr_msg->data.event.value);
-		ret = mb_write(A9 | (MSG << CMD_POS) | M4_SEND_OK);
-
-		if (ret < 0)
-			dbg("mbox send msg err %d\n", ret);
-
 		break;
 
 	default:
@@ -128,6 +100,7 @@ static int dtu_msg_handler(void)
 		break;
 	}
 
+	mq_free_msg(1);
 	return 0;
 }
 
@@ -147,19 +120,26 @@ static int dtu_mu_msg_handler(unsigned int msg)
 		break;
 
 	case SET_DO:
-		// dbg("DO set, start %d, count %d\n", mu_data>>8, mu_data & 0xFF);
-		ret = devs_do_set(mu_data >> 8, mu_data & 0xFF);
+		ret = do_set(mu_data >> 8, mu_data & 0xFF);
 
 		if (ret < 0)
 			dbg("do set err\n");
 
 		break;
 
-	case CLN_DO:
-		ret = devs_do_clean(mu_data >> 8, mu_data & 0xFF);
+	case SET_DO_VALUE:
+		ret = do_set_value(mu_data >> 8, mu_data & 0xFF);
 
 		if (ret < 0)
-			dbg("do set err\n");
+			dbg("do set value err\n");
+
+		break;
+
+	case CLEAR_DO:
+		ret = do_clr(mu_data >> 8, mu_data & 0xFF);
+
+		if (ret < 0)
+			dbg("do clear err\n");
 
 		break;
 
@@ -205,7 +185,7 @@ static void sigint_func(int signum)
 	if (ret < 0)
 		dbg("message queue deinit err\n");
 
-	ret = devs_dio_deinit();
+	ret = dio_deinit();
 
 	if (ret < 0)
 		dbg("dio deinit err\n");
@@ -247,14 +227,14 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	ret = devs_dio_init((unsigned int)(ocram_base + DI_ADDR_OFFSET));
+	ret = hw_dio_init((unsigned int)((char *)ocram_base + DI_ADDR_OFFSET));
 
 	if (ret < 0) {
 		dbg("dio init err\n");
 		return -1;
 	}
 
-	ret = mq_init((unsigned int)(ocram_base + MSG_QUEUE_STRUCT_ADDR_OFFSET));
+	ret = mq_init((unsigned int)((char *)ocram_base + MSG_QUEUE_STRUCT_ADDR_OFFSET));
 
 	if (ret < 0) {
 		dbg("dio init err\n");
@@ -304,7 +284,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	ret = devs_dio_deinit();
+	ret = dio_deinit();
 
 	if (ret < 0) {
 		dbg("dio deinit err\n");

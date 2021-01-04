@@ -49,6 +49,8 @@ void hardware_init(void)
 	CCM_SetRootDivider(CCM, BOARD_EPIT_CCM_DIV, 0);
 	/* Enable clock used by EPITB */
 	CCM_ControlGate(CCM, BOARD_EPITB_CCM_CCGR, ccmClockNeededAll);
+	/* In this demo, we need to share SEMA4 access between domains */
+	RDC_SetPdapAccess(RDC, BOARD_SEMA4_RDC_PDAP, 0xFF, false, false);
 }
 
 /*******************************************************************************

@@ -82,7 +82,6 @@ extern int mq_deinit(void);
 
 extern int mq_free_msg(int count);
 #ifdef M4FIRMWARE
-#include <stdio.h>
 
 /**
  * @brief send a log to A9
@@ -97,12 +96,6 @@ extern int plog(int level, char *buf, int size);
 
 extern int event(int type, int value);
 
-#define LOGD(fmt, args...)       do {\
-		char s[LOG_BUF_SIZE_MAX];				\
-		snprintf(s, sizeof(s), "[Line:%d]Func-%s:"fmt,		\
-			 __LINE__, __FUNCTION__, ##args);		\
-		plog(0, s, sizeof(s));					\
-	} while (0)
 #endif
 #endif
 #endif // !__MSG_H__

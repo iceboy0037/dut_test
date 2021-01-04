@@ -42,7 +42,7 @@ static volatile unsigned int *dio_addr_base;
  * 		0 success
  * 		-1 error
  */
-static int hw_dio_init(unsigned int addr_base)
+int hw_dio_init(unsigned int addr_base)
 {
 	if (addr_base == 0) {
 		return -1;
@@ -79,17 +79,19 @@ static int hw_di_get(int *buf, int start, int count)
 {
 	int ret = 0;
 	int limit = di_get_limit();
-
 	CHECK_DIO_RANGE();
+
 	if (NULL == buf || dio_addr_base == NULL) {
 		return -1;
 	}
 
 #ifdef M4FIRMWARE
 	LMEM_CleanSystemCache(LMEM);
+
 	for (int i = 0; i < count; i++) {
 		buf[i] = *(DI_BASE + start + i);
 	}
+
 #else
 	// todo: A9 scan DI & set DI share memory
 #endif
@@ -101,8 +103,8 @@ static int hw_do_set(int start, int count)
 	int ret = 0;
 	int data = 0;
 	int limit = do_get_limit();
-
 	CHECK_DIO_RANGE();
+
 	if (dio_addr_base == NULL) {
 		return -1;
 	}
@@ -111,10 +113,31 @@ static int hw_do_set(int start, int count)
 	data = (start & 0xFF) << 8 | (count & 0xFF);
 	MU_SendMsg(MUB, MU_CH, M4 | (SET_DO << CMD_POS) | data);
 #else
+
 	// todo: A9 set DO & set DO share memory
 	for (data = 0; data < count; data++) {
 		*(DO_BASE + start + data) = 1;
 	}
+
+#endif
+	return ret;
+}
+
+static int hw_do_set_value(int index, int value)
+{
+	int ret = 0;
+	int limit = do_get_limit();
+
+	if (dio_addr_base == NULL || index > limit) {
+		return -1;
+	}
+
+#ifdef M4FIRMWARE
+	int data = (index & 0xFF) << 8 | ((value & 0xFF) ? 1 : 0);
+	MU_SendMsg(MUB, MU_CH, M4 | (SET_DO_VALUE << CMD_POS) | data);
+#else
+	// todo: A9 set DO & set DO share memory
+	*(DO_BASE + index) = value ? 1 : 0;
 #endif
 	return ret;
 }
@@ -142,7 +165,7 @@ static int hw_do_clear(int start, int count)
 
 #ifdef M4FIRMWARE
 	data = (start & 0xFF) << 8 | (count & 0xFF);
-	MU_SendMsg(MUB, MU_CH, M4 | (CLN_DO << CMD_POS) | data);
+	MU_SendMsg(MUB, MU_CH, M4 | (CLEAR_DO << CMD_POS) | data);
 #else
 
 	// TODO: A9 set DO & set DO share memory
@@ -152,36 +175,6 @@ static int hw_do_clear(int start, int count)
 
 #endif
 	return ret;
-}
-
-/**
- * @brief Print share memory DI and DO value
- * @return int
- * 		0 success
- * 		-1 error
- */
-int hw_dio_dbg(void)
-{
-	int i = 0;
-	DIO_PRINT("==========\n");
-
-	if (NULL == DI_BASE || NULL == DO_BASE)
-		return -1;
-
-#ifdef M4FIRMWARE
-	LMEM_CleanSystemCache(LMEM);
-#endif
-
-	for (i = 0; i < CONFIG_DI_NUMBER; i++) {
-		DIO_PRINT("DI [%d] = %d\n", i, *(DI_BASE + i));
-	}
-
-	for (i = 0; i < CONFIG_DO_NUMBER; i++) {
-		DIO_PRINT("DO [%d] = %d\n", i, *(DO_BASE + i));
-	}
-
-	DIO_PRINT("==========\n");
-	return 0;
 }
 #endif
 
@@ -200,6 +193,7 @@ int dio_init(void)
 
 	for (int i = 0; i < limit; i++) {
 		snprintf(key, RDB_KEY_LEN, "di%d", i);
+
 		if (rdb_exists(key) != SUCCESS) {
 			if (rdb_set_str(key, value) != SUCCESS) {
 				dbg("Create dio failed\n");
@@ -209,8 +203,10 @@ int dio_init(void)
 	}
 
 	limit = do_get_limit();
+
 	for (int i = 0; i < limit; i++) {
 		snprintf(key, RDB_KEY_LEN, "do%d", i);
+
 		if (rdb_exists(key) != SUCCESS) {
 			if (rdb_set_str(key, value) != SUCCESS) {
 				dbg("Create dio failed\n");
@@ -218,9 +214,10 @@ int dio_init(void)
 			};
 		}
 	}
+
 	return 0;
 #else
-	return hw_dio_init(dio_addr_base);
+	return 0;
 #endif
 }
 
@@ -230,6 +227,9 @@ int dio_init(void)
  */
 int dio_deinit(void)
 {
+#ifndef SIMULATOR
+	return hw_dio_deinit();
+#endif
 	return 0;
 }
 
@@ -243,7 +243,6 @@ int dio_deinit(void)
 int di_get(int *buf, int start, int count)
 {
 	int limit = di_get_limit();
-
 	CHECK_DIO_RANGE();
 #ifdef SIMULATOR
 	char key[RDB_KEY_LEN] = { 0 };
@@ -251,6 +250,7 @@ int di_get(int *buf, int start, int count)
 
 	for (int i = 0; i < count; i++) {
 		snprintf(key, RDB_KEY_LEN, "di%d", start + i);
+
 		if (rdb_get_str(key, value) == SUCCESS) {
 			buf[i] = atoi(value);
 		} else {
@@ -258,8 +258,9 @@ int di_get(int *buf, int start, int count)
 			return FAIL;
 		}
 	}
-#else
 
+#else
+	hw_di_get(buf, start, count);
 #endif
 	return SUCCESS;
 }
@@ -274,7 +275,6 @@ int di_get(int *buf, int start, int count)
 int do_get(int *buf, int start, int count)
 {
 	int limit = do_get_limit();
-
 	CHECK_DIO_RANGE();
 #ifdef SIMULATOR
 	char key[RDB_KEY_LEN] = { 0 };
@@ -282,6 +282,7 @@ int do_get(int *buf, int start, int count)
 
 	for (int i = 0; i < count; i++) {
 		snprintf(key, RDB_KEY_LEN, "do%d", start + i);
+
 		if (rdb_get_str(key, value) == SUCCESS) {
 			buf[i] = atoi(value);
 		} else {
@@ -289,6 +290,7 @@ int do_get(int *buf, int start, int count)
 			return FAIL;
 		}
 	}
+
 #else
 	// TODO: A9 or M4 get
 #endif
@@ -305,7 +307,6 @@ int do_get(int *buf, int start, int count)
 int do_set_buf(int *buf, int start, int count)
 {
 	int limit = do_get_limit();
-
 	CHECK_DIO_RANGE();
 #if defined SIMULATOR
 	char name[RDB_KEY_LEN];
@@ -322,8 +323,8 @@ int do_set_buf(int *buf, int start, int count)
 			return FAIL;
 		}
 	}
-#else
 
+#else
 #endif
 	return SUCCESS;
 }
@@ -338,11 +339,11 @@ int do_set_buf(int *buf, int start, int count)
 int di_set_buf(int *buf, int start, int count)
 {
 	int limit = di_get_limit();
-
 	CHECK_DIO_RANGE();
 #if defined SIMULATOR
 	char name[RDB_KEY_LEN];
 	char value[RDB_VAL_LEN];
+
 	for (int i = 0; i < count; i++) {
 		memset(name, 0, RDB_KEY_LEN);
 		memset(value, 0, RDB_VAL_LEN);
@@ -354,8 +355,8 @@ int di_set_buf(int *buf, int start, int count)
 			return FAIL;
 		}
 	}
-#endif
 
+#endif
 	return SUCCESS;
 }
 
@@ -370,9 +371,11 @@ int do_set(int start, int count)
 {
 #ifdef SIMULATOR
 	int buf[CONFIG_DO_NUMBER];
+
 	for (int i = 0; i < count; i++) {
 		buf[i] = 1;
 	}
+
 	return do_set_buf(buf, start, count);
 #else
 	// TODO: Set in M4 or A9
@@ -390,11 +393,28 @@ int do_clr(int start, int count)
 {
 #if defined SIMULATOR
 	int buf[CONFIG_DO_NUMBER];
+
 	for (int i = 0; i < count; i++) {
 		buf[i] = 0;
 	}
+
 	return do_set_buf(buf, start, count);
 #else
 	return hw_do_clear(start, count);
 #endif
+}
+
+/**
+ * @brief set DO channel to 1 or 0
+ * @param  index            DO channel index
+ * @param  value            1 or 0
+ * @return int 0 - success
+ */
+int do_set_value(int index, int value)
+{
+#if defined SIMULATOR
+#else
+	return hw_do_set_value(index, value);
+#endif
+	return 0;
 }

@@ -14,14 +14,14 @@
 #ifndef __LOCK_H__
 #define __LOCK_H__
 
-#ifndef SIMULATOR
+#if !defined SIMULATOR && defined M4FIRMWARE
 /**
  * @brief mutex lock share memory addr init
  * @return int
  * 		0 success
  * 		-1 error
  */
-extern int mem_mutex_init(unsigned int addr_base);
+extern int mem_mutex_init(void);
 
 /**
  * @brief mutex lock share memory addr deinit

@@ -104,7 +104,10 @@ void *mq_curr_msg(void)
 	LMEM_CleanSystemCache(LMEM);
 #endif
 
-	if (mq->count && mq != NULL) {
+	if (NULL == mq)
+		return NULL;
+
+	if (mq->count) {
 		return (void *)((mqbuf) + (mq->out * MSG_QUEUE_ITEM_SIZE));
 	} else
 		return NULL;
@@ -143,16 +146,7 @@ int mq_deinit(void)
 	return 0;
 }
 #ifdef M4FIRMWARE
-/**
- * @brief log callback
- * @param  arg              Callback param
- * @return int
- */
-int log_cb(void *arg)
-{
-	PRINTF("send log ok\r\n");
-	return 0;
-}
+
 
 /**
  * @brief send a log to A9
@@ -178,7 +172,6 @@ int plog(int level, char *buf, int size)
 	memset(msg, 0, sizeof(struct msg_t));
 	msg->type = LOG;
 	msg->data.log.level = level;
-	msg->cb = log_cb;
 	memcpy(msg->data.log.buf, buf, size);
 	LMEM_CleanSystemCache(LMEM);
 	ret = MU_TrySendMsg(MUB, MU_CH, M4 | (MSG << CMD_POS) | M4_SEND);
@@ -190,11 +183,7 @@ int plog(int level, char *buf, int size)
 	return ret;
 }
 
-int event_cb(void *arg)
-{
-	PRINTF("send event ok\r\n");
-	return 0;
-}
+
 int event(int type, int value)
 {
 	int ret = 0;
@@ -208,7 +197,6 @@ int event(int type, int value)
 	msg->type = EVENT;
 	msg->data.event.type = type;
 	msg->data.event.value = value;
-	msg->cb = event_cb;
 	LMEM_CleanSystemCache(LMEM);
 	ret = MU_TrySendMsg(MUB, MU_CH, M4 | (MSG << CMD_POS) | M4_SEND);
 

@@ -23,11 +23,11 @@ extern "C" {
 #include <string.h>
 
 #define	CHECK_DIO_RANGE()	do { \
-					if ((start > limit) || (start + count > limit)) { \
-						dbg("Out of range : 0 ~ %d\n", limit);\
-						return FAIL; \
-					} \
-				} while (0)
+		if ((start > limit) || (start + count > limit)) { \
+			dbg("Out of range : 0 ~ %d\n", limit);\
+			return FAIL; \
+		} \
+	} while (0)
 
 /**
  * @brief Get system DI Channel number
@@ -100,6 +100,18 @@ extern int do_get(int *buf, int start, int count);
 extern int do_clr(int start, int count);
 extern int dio_dbg(void);
 
+
+/**
+ * @brief set DO channel to 1 or 0
+ * @param  index            DO channel index
+ * @param  value            1 or 0
+ * @return int 0 - success
+ */
+extern int do_set_value(int index, int value);
+
+#ifndef SIMULATOR
+extern int hw_dio_init(unsigned int addr_base);
+#endif
 #ifdef __cplusplus
 }
 #endif
