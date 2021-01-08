@@ -19,6 +19,8 @@
 #include "dbg.h"
 #include "dio.h"
 #include "yc.h"
+#include "yx.h"
+#include "tables.h"
 #include "dtu_data.h"
 
 static int cmd_di_buf[CONFIG_DI_NUMBER];
@@ -297,6 +299,23 @@ static int shell_cmd_lsyc(int argc, char *argv)
 	println("----------------YC Status----------------\n");
 	println("%24s%16s", "Key", "Status\n");
 	rdb_ls_key("keys yc:*");
+	return 0;
+}
+static int shell_cmd_lsyx(int argc, char *argv)
+{
+	struct yx_desc_t *desc;
+	int cnt;
+	println("----------------Status Status----------------\n");
+	println("%24s%16s", "Key", "Status\n");
+
+	cnt = sdb_select_multi("select * from tbl_yx", &sdb_map_yx_desc, (void **)&desc, sizeof(struct yx_desc_t));
+	if (cnt < 0) {
+		dbg("Select failed\n");
+		return -1;
+	}
+	for (int i = 0; i < cnt; i++, desc++) {
+		println("%d: %16s %16s %16d\n", i, desc->dname, desc->alias, desc->ptid);
+	}
 	return 0;
 }
 

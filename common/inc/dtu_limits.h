@@ -26,6 +26,9 @@ extern "C" {
 #define	MAX_TRAN_DO		2560	        // 遥控参数
 #define MAX_TRAN_DD		2560	        // 电度参数
 
+#define TM_STR_LEN		24		// 时间字符串长度 "1970-01-01 00:00:00.000"
+#define STR_LEN			32		// 常用字符串长度定义
+#define	SQL_CMD_LEN		128		// SQL 查询命令长度
 #define TYPE_STR_LENGTH		16		// 数据类型字符串长度
 #define POINT_DESC_LENGTH	32	        // 点位描述字符串长度
 #define DTU_YC_LIST_MAX         256             // 本机遥测点位最大数量

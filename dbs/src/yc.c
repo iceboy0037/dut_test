@@ -456,9 +456,9 @@ int yc_save_by_id(void *value, int id)
 int yc_read_single(void *value, int id)
 {
 	struct yc_desc_t desc;
-	char cmd[128];
+	char cmd[SQL_CMD_LEN];
 	char buf[RDB_VAL_LEN] = {0};
-	char key[24];
+	char key[STR_LEN];
 
 	sprintf(cmd, "select * from tbl_yc_desc where ptid=%d", id);
 	dbg("%s\n", cmd);

@@ -21,6 +21,8 @@ extern "C" {
 #include "dtu_types.h"
 
 #define SDB_DEFAULT_PATH 	"../config/dtu_list.db"
+#define sdb_malloc		malloc
+#define	sdb_free		free
 
 struct sdb_map_item_t {
 	char *name;
@@ -38,7 +40,15 @@ struct sdb_map_t {
 				sizeof(name##_sdb_map_array) / sizeof(struct sdb_map_item_t)};
 #define	SDB_MAP_ADDR(name) &sdb_map_##name
 
-
+/**
+ * @brief Execuate Select command, malloc list memory and fill associated structure list
+ * @param  cmd	SQL Command
+ * @param  map	SDB structure map
+ * @param  base	Associate structure base address pointer, will use sdb_malloc to allocate table memory
+ * @param  size Base structure size in bytes
+ * @return int <0 on failure, >0 return table count
+ */
+int sdb_select_multi(char *cmd, struct sdb_map_t *map, void **base, int size);
 
 /**
  * @brief Execuate Select command, and fill associated structure

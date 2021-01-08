@@ -21,8 +21,8 @@ extern "C" {
 #include "sdb.h"
 #include "rdb.h"
 
-
 extern struct sdb_map_t sdb_map_yc_desc;
+extern struct sdb_map_t sdb_map_yx_desc;
 
 #ifdef __cplusplus
 }

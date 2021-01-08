@@ -108,6 +108,7 @@ int rdb_connect(void)
 int main(int argc, char *argv[])
 {
 	rdb_connect();
+	printf("strlen = %d\n", strlen("1970-01-01 00:00:00.000"));
 	redisReply *reply = (redisReply *)redisCommand(m_ctx, "keys di299*");
 	printf("Type = %d\n", reply->type);
 

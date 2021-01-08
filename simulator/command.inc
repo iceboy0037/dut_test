@@ -10,6 +10,7 @@ BEGIN_COMMAND(shell)
 	ON_COMMAND("lsdi", shell_cmd_lsdi, "lsdi", "List DI status")
 	ON_COMMAND("lsdo", shell_cmd_lsdo, "lsdo", "List DO status")
 	ON_COMMAND("lsyc", shell_cmd_lsyc, "lsyc", "List all YC in RDB")
+	ON_COMMAND("lsyx", shell_cmd_lsyx, "lsyx", "List all YX in RDB")
 
 	ON_COMMAND("setdo", shell_cmd_setdo, "setdo", "Set DO status to 1")
 	ON_COMMAND("setdi", shell_cmd_setdi, "setdi", "Set DI status to 1")
