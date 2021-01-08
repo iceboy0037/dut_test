@@ -21,7 +21,7 @@ if os.path.isfile(dbname):
 
 def getTimeStr():
 	fmt = "YYYY-MM-DD HH:MM:SS.SSS"
-	return  time.strftime("%Y-%m-%d %H:%M:%S" ,time.localtime(time.time()))
+	return  time.strftime(fmt, time.localtime(time.time()))
 
 def InitDescTable(table, cursor, devid):
 	for i in range(1, table.nrows):
@@ -52,12 +52,47 @@ def InitDescTable(table, cursor, devid):
 				table.row_values(i)[1],
 				table.row_values(i)[2],
 				))
-		print(ret)
 	return
 
 def InitSysTable(table, cursor):
 	for i in range(1, table.nrows):
 		print()
+	return
+
+def InitYxTable(table, cursor, did):
+	for i in range(1, table.nrows):
+		print("insert into tbl_yx (devid, ptid, fun, inf, dname, alias, value, tm, count, tname, type, aname, attr)\
+				values (%d, %d, %d, %d, '%s', '%s', %d, '%s', %d, '%s', '%s', '%s', '%s')" %
+				(did,
+				(int(table.row_values(i)[3]) << 16) + int(table.row_values(i)[4]),
+				int(table.row_values(i)[3]),	# fun
+				int(table.row_values(i)[4]),	# inf
+				table.row_values(i)[5],			# dname
+				table.row_values(i)[6],			# alias
+				int(table.row_values(i)[7]),	# value
+				table.row_values(i)[8],			# tm
+				int(table.row_values(i)[9]),	# count
+				table.row_values(i)[10],
+				table.row_values(i)[11],
+				table.row_values(i)[12],
+				table.row_values(i)[13],
+				))
+		ret = cursor.execute("insert into tbl_yx (devid, ptid, fun, inf, dname, alias, value, tm, count, tname, type, aname, attr)\
+				values (%d, %d, %d, %d, '%s', '%s', %d, '%s', %d, '%s', '%s', '%s', '%s')" %
+				(did,
+				(int(table.row_values(i)[3]) << 16) + int(table.row_values(i)[4]),
+				int(table.row_values(i)[3]),	# fun
+				int(table.row_values(i)[4]),	# inf
+				table.row_values(i)[5],			# dname
+				table.row_values(i)[6],			# alias
+				int(table.row_values(i)[7]),	# value
+				table.row_values(i)[8],			# tm
+				int(table.row_values(i)[9]),	# count
+				table.row_values(i)[10],
+				table.row_values(i)[11],
+				table.row_values(i)[12],
+				table.row_values(i)[13],
+				))
 	return
 
 devid = 0xff
@@ -131,6 +166,27 @@ tables = [
 				value	real not null\
 			);"
 	},
+
+	# YX table
+	{
+		"name" : "tbl_yx",
+		"cmd" : "create table if not exists tbl_yx \
+			(\
+				devid	integer not null,\
+				ptid	integer primary key not null,\
+				fun	integer not null,\
+				inf	integer not null,\
+				dname	text not null,\
+				alias	text not null,\
+				value	integer not null,\
+				tm	text not null,\
+				count	integer not null,\
+				tname	text not null,\
+				type	text not null,\
+				aname	text not null,\
+				attr	text not null\
+			);"
+	},
 ]
 
 # 1. Create DB connection
@@ -153,6 +209,7 @@ for x in data.sheets():
 
 table = data.sheets()
 InitDescTable(table[2], cursor, devid)
+InitYxTable(table[4], cursor, devid)
 
 cursor.close()
 conn.commit()
