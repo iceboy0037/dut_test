@@ -93,7 +93,7 @@ struct yc_relay_line_t {	// 线路保护遥测值
 
 struct yc_misc_t {						// 其它遥测值
 	union rtc_tm {
-		struct rtc_time rtc;				// 时间结构
+		struct time_stamp rtc;				// 时间结构
 		char buff[RTC_TIME_BUF_LEN];			// 时间对应时分秒数组
 	} tm;
 	int 	grid_freq;					// 电网频率

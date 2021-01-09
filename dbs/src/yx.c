@@ -26,7 +26,7 @@ int yx_sdb_to_rdb(void)
  * @param  ptid	YX point ID
  * @return int 0 - success
  */
-int yx_save_by_id(int value, int ptid)
+int yx_save_by_id(int value, int ptid, char *tm)
 {
 	return 0;
 }

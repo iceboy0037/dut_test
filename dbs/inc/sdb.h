@@ -35,7 +35,7 @@ struct sdb_map_t {
 };
 
 #define SDB_MAP_START(name) static struct sdb_map_item_t name##_sdb_map_array[] = {
-#define	SDB_MAP_ITEM(name, type, base, member)	{name, type, offsetof(base, member)},
+#define	SDB_MAP_ITEM(type, base, member)	{#member, type, offsetof(base, member)},
 #define	SDB_MAP_END(name) }; struct sdb_map_t sdb_map_##name = {name##_sdb_map_array, \
 				sizeof(name##_sdb_map_array) / sizeof(struct sdb_map_item_t)};
 #define	SDB_MAP_ADDR(name) &sdb_map_##name

@@ -280,6 +280,7 @@ static int shell_cmd_saveyc(int argc, char *argv)
 	yc_save_table(&yc_tbl);
 	return 0;
 }
+
 static int shell_cmd_readyc(int argc, char *argv)
 {
 	float value;
@@ -294,6 +295,7 @@ static int shell_cmd_readyc(int argc, char *argv)
 	println("YC %d : %f\n", atoi(ARGV(1)), value);
 	return 0;
 }
+
 static int shell_cmd_lsyc(int argc, char *argv)
 {
 	println("----------------YC Status----------------\n");
@@ -301,21 +303,41 @@ static int shell_cmd_lsyc(int argc, char *argv)
 	rdb_ls_key("keys yc:*");
 	return 0;
 }
+
 static int shell_cmd_lsyx(int argc, char *argv)
 {
 	struct yx_desc_t *desc;
+	struct yx_desc_t *tmp;
 	int cnt;
-	println("----------------Status Status----------------\n");
-	println("%24s%16s", "Key", "Status\n");
 
+	println("--------------------------YX Status--------------------------\n");
 	cnt = sdb_select_multi("select * from tbl_yx", &sdb_map_yx_desc, (void **)&desc, sizeof(struct yx_desc_t));
 	if (cnt < 0) {
 		dbg("Select failed\n");
 		return -1;
 	}
+
+	tmp = desc;
+	println("%-4s: %-6s %-6s %-6s %-6s %-24s %-32s %-32s\n",
+		"seq", "ptid", "fun", "inf", "val", "time", "alias", "desc");
 	for (int i = 0; i < cnt; i++, desc++) {
-		println("%d: %16s %16s %16d\n", i, desc->dname, desc->alias, desc->ptid);
+		println("%-4d: %-6d %-6d %-6d %-6d %-24s %-32s %-32s\n",
+			i, desc->ptid, desc->fun, desc->inf, desc->value,
+			desc->tm, desc->alias, desc->dname );
 	}
+	sdb_free(tmp);
+	return 0;
+}
+
+static int shell_cmd_time(int argc, char *argv)
+{
+	struct time_stamp ts;
+	char *day[] = { "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
+
+	get_time_stamp(&ts);
+	println("%04d-%02d-%02d %02d:%02d:%02d.%03d %s\n",
+		ts.year, ts.month + 1, ts.date,
+		ts.hour, ts.min, ts.sec, ts.msec, day[ts.day]);
 	return 0;
 }
 

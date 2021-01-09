@@ -19,6 +19,7 @@
 #include "dbs.h"
 #include "sdb.h"
 #include "dbg.h"
+#include "dtu_limits.h"
 
 static sqlite3 *sdb = NULL;
 
@@ -45,7 +46,6 @@ sqlite3 *sdb_open(char *path)
 		dbg("Can't open database: %s\n", sqlite3_errmsg(sdb));
 		return NULL;
 	}
-	dbg("Opened database successfully\n");
 	return sdb;
 }
 
@@ -75,14 +75,15 @@ int sdb_select_multi(char *cmd, struct sdb_map_t *map, void **base, int size)
 	int cols;
 	int index;
 	ssize_t addr;
+	ssize_t item_base;
 
 	sqlite3 *db = sdb_open(SDB_DEFAULT_PATH);
 	if (db == NULL) {
 		return -1;
 	}
 
-	if (sqlite3_get_table(db, cmd, &result, &rows, &cols, &errmsg) != 0) {
-		dbg("error : %s\n", errmsg);
+	if (sqlite3_get_table(db, cmd, &result, &rows, &cols, &errmsg) != SQLITE_OK) {
+
 		sqlite3_free(errmsg);
 		sdb_close(db);
 		return -1;
@@ -97,7 +98,7 @@ int sdb_select_multi(char *cmd, struct sdb_map_t *map, void **base, int size)
 
 	*base = (void *)sdb_malloc(rows * size);
 	if (*base == NULL) {
-		dbg("Malloc talbe structure list failed\n");
+		dbg("Malloc table structure list failed\n");
 		sqlite3_free_table(result);
 		sdb_close(db);
 		return -1;
@@ -105,11 +106,13 @@ int sdb_select_multi(char *cmd, struct sdb_map_t *map, void **base, int size)
 
 	index = cols;
 	for (int i = 0; i < rows; i++) {
-		println("%d: \n", i);
-		addr = (ssize_t)(*base) + size * i;
+		item_base = (ssize_t)(*base) + size * i;
 		for (int j = 0; j < cols; j++) {
-			addr += map->array[j].offset;
+			addr = item_base + map->array[j].offset;
 			switch (map->array[j].type) {
+			case PT_TYPE_CHAR:
+				*(char *)addr = (char)atoi(result[index]);
+				break;
 			case PT_TYPE_INT:
 				*(int *)addr = atoi(result[index]);
 				break;
@@ -120,9 +123,9 @@ int sdb_select_multi(char *cmd, struct sdb_map_t *map, void **base, int size)
 				strcpy((char *)addr, result[index]);
 				break;
 			default:
+				dbg("NOT Support\n");
 				break;
 			}
-			//println("%-8s : %-8s\n", result[j], result[index]);
 			index++;
 		}
 	}

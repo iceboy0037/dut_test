@@ -13,6 +13,9 @@
 		"utility": "cpp",
 		"xmemory": "cpp",
 		"xtr1common": "cpp",
-		"xutility": "cpp"
+		"xutility": "cpp",
+		"algorithm": "c",
+		"xhash": "c",
+		"xtree": "c"
 	}
 }

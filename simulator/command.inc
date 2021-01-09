@@ -3,6 +3,7 @@ BEGIN_COMMAND(shell)
 	ON_COMMAND("?", shell_cmd_help, "?", "Print all shell commands")
 	ON_COMMAND("help", shell_cmd_help, "help", "Print all shell commands")
 	ON_COMMAND("q", shell_cmd_quit, "q", "quit")
+	ON_COMMAND("time", shell_cmd_time, "time", "Print current time stamp")
 
 	ON_COMMAND("dbset", shell_cmd_dbset, "dbset", "Set Database key-value")
 	ON_COMMAND("dbget", shell_cmd_dbget, "dbget", "Get Database key-value")

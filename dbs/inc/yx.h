@@ -21,8 +21,8 @@ extern "C" {
  * @brief 遥信点位描述结构，对应于数据库中的表结构
  */
 struct yx_desc_t {
-	int	ptid;				// 点位ID号
 	int	devid;				// 设备ID号
+	int	ptid;				// 点位ID号
 	int	fun;				// 功能号
 	int	inf;				// 信息编号
 	char	dname[STR_LEN];			// 显示名，可中文
@@ -36,6 +36,14 @@ struct yx_desc_t {
 	char	aname[STR_LEN];			// 属性描述
 	char	attr[STR_LEN];			// 属性
 };
+
+/**
+ * @brief Read YX desc structure single
+ * @param  desc	Return value
+ * @param  ptid	Point ID
+ * @return int 0 - success
+ */
+int yx_read_desc_single(struct yx_desc_t *desc, int ptid);
 
 #ifdef __cplusplus
 }
