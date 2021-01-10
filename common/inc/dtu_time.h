@@ -9,6 +9,7 @@
  * <table>
  * <tr><th>Date       <th>Version <th>Author  <th>Description
  * <tr><td>2020-12-20 <td>1.0     <td>rock     <td>Create
+ * <tr><td>2021-12-20 <td>1.0     <td>rock     <td>Create
  * </table>
  */
 #ifndef __DTU_TIME_H__
@@ -35,6 +36,7 @@ struct time_stamp {
 };
 
 #define RTC_TIME_BUF_LEN	sizeof(struct time_stamp)
+#define TIME_STRING_LEN		(24 + 1)	// strlen("1970-01-01 00:00:00.000")
 
 /**
  * @brief Get the time stamp object
@@ -42,6 +44,22 @@ struct time_stamp {
  * @return int 0 - success
  */
 extern int get_time_stamp(struct time_stamp *ts);
+
+/**
+ * @brief Fomat time stamp to string format
+ * @param  ts	Time stamp struct
+ * @param  str	Return time string in YYYY-MM-DD HH:MM:SS.SSS
+ * @return int 0 - success
+ */
+extern int stamp_to_string(struct time_stamp *ts, char *str);
+
+/**
+ * @brief Convert string to time stamp struct
+ * @param  ts	Time stamp struct
+ * @param  str	Return time string in YYYY-MM-DD HH:MM:SS.SSS
+ * @return int  0 - success
+ */
+int string_to_stamp(struct time_stamp *ts, char *str);
 
 #ifdef __cplusplus
 }

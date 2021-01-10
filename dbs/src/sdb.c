@@ -79,11 +79,11 @@ int sdb_select_multi(char *cmd, struct sdb_map_t *map, void **base, int size)
 
 	sqlite3 *db = sdb_open(SDB_DEFAULT_PATH);
 	if (db == NULL) {
+		dbg("Open DB file %s failed\n", SDB_DEFAULT_PATH);
 		return -1;
 	}
 
 	if (sqlite3_get_table(db, cmd, &result, &rows, &cols, &errmsg) != SQLITE_OK) {
-
 		sqlite3_free(errmsg);
 		sdb_close(db);
 		return -1;

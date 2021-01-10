@@ -39,3 +39,54 @@ int get_time_stamp(struct time_stamp *ts)
 
 	return 0;
 }
+
+/**
+ * @brief Fomat time stamp to string format
+ * @param  ts	Time stamp struct
+ * @param  str	Return time string in YYYY-MM-DD HH:MM:SS.SSS
+ * @return int 0 - success
+ */
+int stamp_to_string(struct time_stamp *ts, char *str)
+{
+	snprintf(str, TIME_STRING_LEN, "%04d-%02d-%02d %02d:%02d:%02d.%03d",
+		ts->year, ts->month + 1, ts->date,
+		ts->hour, ts->min, ts->sec, ts->msec);
+	return 0;
+}
+
+/**
+ * @brief Convert string to time stamp struct
+ * @param  ts	Time stamp struct
+ * @param  str	Return time string in YYYY-MM-DD HH:MM:SS.SSS
+ * @return int  0 - success
+ */
+int string_to_stamp(struct time_stamp *ts, char *str)
+{
+	char buf[TIME_STRING_LEN + 1] = { 0 };
+
+	// "1970-01-01 00:00:00.000"
+	if (strlen(str) != TIME_STRING_LEN) {
+		dbg("Invalid time string format\n");
+		return -1;
+	}
+
+	strcpy(buf, str);
+	buf[4]  = '\0';
+	buf[7]  = '\0';
+	buf[10] = '\0';
+	buf[13] = '\0';
+	buf[16] = '\0';
+	buf[19] = '\0';
+
+	ts->year  = atoi(&buf[0]);
+	ts->month = atoi(&buf[5]);
+	ts->date  = atoi(&buf[8]);
+	ts->hour  = atoi(&buf[11]);
+	ts->min   = atoi(&buf[14]);
+	ts->sec   = atoi(&buf[17]);
+	ts->msec  = atoi(&buf[20]);
+
+	/// TODO: Calc day and dst mode
+
+	return 0;
+}

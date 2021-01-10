@@ -19,6 +19,7 @@ extern "C" {
 #endif
 
 #include "dtu_types.h"
+#include "sqlite3.h"
 
 #define SDB_DEFAULT_PATH 	"../config/dtu_list.db"
 #define sdb_malloc		malloc
@@ -58,6 +59,19 @@ int sdb_select_multi(char *cmd, struct sdb_map_t *map, void **base, int size);
  * @return int 0 - success
  */
 int sdb_select_single(char *cmd, struct sdb_map_t *map, void *base);
+
+/**
+ * @brief Open a Sqlite3 Database
+ * @param  path DB path
+ * @return sqlite3* NULL if failed
+ */
+extern sqlite3 *sdb_open(char *path);
+
+/**
+ * @brief close a sqlite3 database
+ * @param  db	DB pointer
+ */
+extern void sdb_close(sqlite3 *db);
 
 #ifdef __cplusplus
 }

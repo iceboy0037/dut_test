@@ -21,6 +21,7 @@ extern "C" {
 
 #include "rdb.h"
 #include "sdb.h"
+#include "sqlite3.h"
 
 #ifdef __cplusplus
 }

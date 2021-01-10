@@ -304,14 +304,48 @@ static int shell_cmd_lsyc(int argc, char *argv)
 	return 0;
 }
 
+static int shell_cmd_yxset(int argc, char *argv)
+{
+	int ptid;
+
+	if (argc == 2) {	// select with ptid
+		ptid = atoi(ARGV(1));
+	} else if (argc == 3) {
+		ptid = (atoi(ARGV(1)) << 16) + atoi(ARGV(2));
+	} else {
+		println("Usage: \n");
+		println("\tyxset ptid    - List YX with ptid\n");
+		println("\tyxset fun inf - List YX with fun and inf\n\n");
+		return -1;
+	}
+
+	println("Set YX(%d) to 1\n", ptid);
+	return yx_save_by_id(1, ptid, NULL);
+}
+
 static int shell_cmd_lsyx(int argc, char *argv)
 {
 	struct yx_desc_t *desc;
 	struct yx_desc_t *tmp;
 	int cnt;
+	char cmd[SQL_CMD_LEN + 1] = { 0 };
+
+	if (argc == 2) {	// select with ptid
+		snprintf(cmd, SQL_CMD_LEN, "select * from tbl_yx where ptid=%s", ARGV(1));
+	} else if (argc == 3) {
+		snprintf(cmd, SQL_CMD_LEN, "select * from tbl_yx where fun=%s and inf=%s", ARGV(1), ARGV(2));
+	} else if (argc == 1) {
+		snprintf(cmd, SQL_CMD_LEN, "select * from tbl_yx");
+	} else {
+		println("Usage: \n");
+		println("\tlsyx         - List all YX \n");
+		println("\tlsyx ptid    - List YX with ptid\n");
+		println("\tlsyx fun inf - List YX with fun and inf\n\n");
+		return -1;
+	}
 
 	println("--------------------------YX Status--------------------------\n");
-	cnt = sdb_select_multi("select * from tbl_yx", &sdb_map_yx_desc, (void **)&desc, sizeof(struct yx_desc_t));
+	cnt = sdb_select_multi(cmd, &sdb_map_yx_desc, (void **)&desc, sizeof(struct yx_desc_t));
 	if (cnt < 0) {
 		dbg("Select failed\n");
 		return -1;
