@@ -7,6 +7,7 @@
 | 2020-12-28 | 游荣强 | 添加总体描述，环境及部分API接口函数说明 |
 | 2020-12-30 | 贾世鹏 | 添加DIO、MSG、MU接口说明                |
 | 2020-12-30 | 游荣强 | 增加系统监测定义                        |
+| 2020-01-10 | 游荣强 | 增加遥信读写接口，和时间处理函数        |
 
 ## 一、概述
 
@@ -543,11 +544,77 @@ DTU > lsyc
 int yc_read_single(void *value, int id);
 ```
 
-### 4.6 双核交互
+### 4.6 遥信处理
+
+遥信表记录于config/dtu_list.db中，每条结构定义如下。
+
+```c
+struct yx_desc_t {
+	int	devid;				// 设备ID号
+	int	ptid;				// 点位ID号
+	int	fun;				// 功能号
+	int	inf;				// 信息编号
+	char dname[STR_LEN];	// 显示名，可中文
+	char alias[STR_LEN];	// 英文别名，也是编程中的变量名
+	char value;				// 遥信值都是0或1，统一定义为char
+	char resv[3];
+	char tm[TM_STR_LEN];	// 设置时间
+	int	count;				// 计数
+	char tname[STR_LEN];	// 类别描述
+	char type[STR_LEN];		// 类别
+	char aname[STR_LEN];	// 属性描述
+	char attr[STR_LEN];		// 属性
+};
+```
+
+提供遥信的读写接口，通过模拟器可以对遥信进行查看和设置，以便于程序的调试。在模拟器中提供的遥信命令如下。
+
+```shell
+yxset    - Set YX value
+lsyx     - List all YX in RDB
+```
+
+#### 4.6.1 读取单个遥信
+
+通过点位ID号可读取遥信值，只返回值与时标结构体，如果不需要时村，则将ts参数设置为NULL
+
+```c
+/**
+ * @brief Read YX value by value
+ * @param  value Return value
+ * @param  ptid	YX point id
+ * @param  ts	YX time stamp, if not need, set it to NULL
+ * @return int 0 - success
+ */
+int yx_read_single(char *value, int ptid, struct time_stamp *ts);
+```
+
+
+
+#### 4.6.2 保存单个遥信
+
+将遥信值保存到数据库中，如果不需要更新遥信时标，将ts参数设置为NULL
+
+```c
+/**
+ * @brief Save a YX value by Point ID
+ * @param  value YX value
+ * @param  ptid	YX point ID
+ * @param  ts YX time stamp, if not need, set it to NULL
+ * @return int 0 - success
+ */
+int yx_save_by_id(int value, int ptid, struct time_stamp *ts);
+```
+
+### 4.7 遥控处理
+
+TBD
+
+### 4.8 双核交互
 
 这部分的所有函数，**只允许系统的服务部分调用，业余逻辑所有模块（保护逻辑、远动计算、通讯模块等），禁止使用。**
 
-#### 4.6.1 MSG 初始化
+#### 4.8.1 MSG 初始化
 此接口M4和A9应用层共用，MSG 共享内存初始化，参数为共享内存起始地址。
 ```c
 /**
@@ -559,7 +626,7 @@ int yc_read_single(void *value, int id);
 int mq_init(unsigned int addr_base);
 ```
 
-#### 4.6.2 申请一个MSG共享内存空间
+#### 4.8.2 申请一个MSG共享内存空间
 此接口M4和A9应用层共用，申请一块空间，以便填充MSG数据
 ```c
 /**
@@ -570,7 +637,7 @@ int mq_init(unsigned int addr_base);
 void *mq_malloc_msg(void);
 ```
 
-#### 4.6.3 释放一个或多个MSG共享内存空间
+#### 4.8.3 释放一个或多个MSG共享内存空间
 此接口M4和A9应用层共用
 ```c
 /**
@@ -583,7 +650,7 @@ void *mq_malloc_msg(void);
 int mq_free_msg(int count);
 ```
 
-#### 4.6.4 基于MSG和MU的log接口
+#### 4.8.4 基于MSG和MU的log接口
 M4端使用，向A9端传输一条log信息
 ```c
 /**
@@ -598,17 +665,17 @@ M4端使用，向A9端传输一条log信息
 int plog(int level, char *buf, int size);
 ```
 
-#### 4.6.5 基于MSG和MU的事件接口
+#### 4.8.5 基于MSG和MU的事件接口
 仅在M4端使用，向A9端传输一个事件
 ```c
 int event(int type, int value);
 ```
 
-### 4.7 系统监测
+### 4.9 系统监测
 
 系统设置了进程监测功能，业务层模块启动后自行调用看门狗初始化程序，以使能看门狗。在进行的运行过程中，间隔性地调用喂狗函数，否则进程将被重新启动。
 
-#### 4.7.1 看门狗初始化
+#### 4.9.1 看门狗初始化
 ```c
 /**
  * @brief Init watchdog
@@ -617,7 +684,7 @@ int event(int type, int value);
 int init_dog(void);
 ```
 
-#### 4.7.2 看门狗使能
+#### 4.9.2 看门狗使能
 
 ```c
 /**
@@ -629,7 +696,7 @@ int enable_dog(void);
 
 
 
-#### 4.7.3 看门狗禁止
+#### 4.9.3 看门狗禁止
 
 ```c
 /**
@@ -641,7 +708,7 @@ int disable_dog(void);
 
 
 
-#### 4.7.4 喂狗
+#### 4.9.4 喂狗
 
 ```c
 /**
@@ -649,6 +716,63 @@ int disable_dog(void);
  * @return int 0 - success
  */
 int kick_dog(void);
+```
+
+### 4.10 时间相关
+
+系统提供时间的相关接口函数，来实现时间的处理。目前提供两种时间格式，字符串格式和时间结构体格式，精确到毫秒级。字符串格式为**"1970-01-01 00:00:00.000"**，无星期，无夏令时标识。结构体时间格式带星期和夏令时标识。
+
+```c
+struct time_stamp {
+	int	year;	// 年份
+	int	month;	// 月份（从一月开始，0代表一月） - 取值区间为[0, 11]
+	int	date;	// 一个月中的日期 - 取值区间为[1,31]
+	int	day;	// 星期几， 0开始，0代表星期天
+	int	hour;	// 时 	- 取值区间为[0, 23]
+	int	min;	// 分 	- 取值区间为[0, 59]
+	int	sec;	// 秒 	– 取值区间为[0, 59]
+	int	msec;	// 毫秒  - 取值区间为[0, 999]
+	int	isdst;	// 夏令时标识符，实行夏令时的时候，为正。不实行夏令时的进候，为0
+};
+```
+
+#### 4.10.1 获取结构体时间
+
+通过结构体返回结构体时间格式
+
+```c
+/**
+ * @brief Get the time stamp object
+ * @param  ts	Return time stamp
+ * @return int 0 - success
+ */
+extern int get_time_stamp(struct time_stamp *ts);
+```
+
+#### 4.10.2 结构时间转换成字符串
+
+```c
+/**
+ * @brief Fomat time stamp to string format
+ * @param  ts	Time stamp struct
+ * @param  str	Return time string in YYYY-MM-DD HH:MM:SS.SSS
+ * @return int 0 - success
+ */
+extern int stamp_to_string(struct time_stamp *ts, char *str);
+```
+
+#### 4.10.3 字符串转换成时间结构
+
+字符串长度不为**"1970-01-01 00:00:00.000"**格式时，函数可能出错。
+
+```c
+/**
+ * @brief Convert string to time stamp struct
+ * @param  ts	Time stamp struct
+ * @param  str	Return time string in YYYY-MM-DD HH:MM:SS.SSS
+ * @return int  0 - success
+ */
+int string_to_stamp(struct time_stamp *ts, char *str);
 ```
 
 

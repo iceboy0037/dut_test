@@ -85,6 +85,8 @@ int yx_read_single(char *value, int ptid, struct time_stamp *ts)
 		return -1;
 	}
 
+	*value = (char)desc.value;
+
 	return 0;
 }
 

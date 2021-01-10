@@ -43,7 +43,7 @@ struct yx_desc_t {
  * @param  ptid	Point ID
  * @return int 0 - success
  */
-int yx_read_desc_single(struct yx_desc_t *desc, int ptid);
+extern int yx_read_desc_single(struct yx_desc_t *desc, int ptid);
 
 /**
  * @brief Save a YX value by Point ID
@@ -52,7 +52,16 @@ int yx_read_desc_single(struct yx_desc_t *desc, int ptid);
  * @param  ts YX time stamp, if not need, set it to NULL
  * @return int 0 - success
  */
-int yx_save_by_id(int value, int ptid, struct time_stamp *ts);
+extern int yx_save_by_id(int value, int ptid, struct time_stamp *ts);
+
+/**
+ * @brief Read YX value by value
+ * @param  value Return value
+ * @param  ptid	YX point id
+ * @param  ts	YX time stamp, if not need, set it to NULL
+ * @return int 0 - success
+ */
+extern int yx_read_single(char *value, int ptid, struct time_stamp *ts);
 
 #ifdef __cplusplus
 }
