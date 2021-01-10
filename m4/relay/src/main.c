@@ -26,6 +26,7 @@
 #include "share_memory.h"
 #include "mu.h"
 #include "dbg.h"
+#include "common.h"
 #endif
 
 /**
@@ -43,10 +44,9 @@ int main(int argc, char *argv[])
 	hardware_init();
 	timer_init();
 	timer_start();
-
 	mq_init((unsigned int)MSG_QUEUE_STRUCT_ADDR);
-	mem_mutex_init((unsigned int)MUTEX_LOCK_A9_ADDR);
-	devs_dio_init((unsigned int)DI_ADDR);
+	mem_mutex_init();
+	hw_dio_init((unsigned int)DI_ADDR);
 	PRINTF("Relay Entry...\r\n");
 #endif
 	adc_init(ADC_GRID_FREQ_DEFAULT, ADC_WAVE_SAMPLE_POINT);
@@ -61,18 +61,22 @@ void BOARD_EPITB_HANDLER(void)
 {
 	EPIT_ClearStatusFlag(BOARD_EPITB_BASEADDR);
 	time++;
+
 	if (time % 10 == 0) {
 		dbg("now time %d\n", time);
 		PRINTF("send now time %d\r\n", time);
 	}
-	if (time % 10 == 8) {
-		kick_dog();
-	}
+
 	if (time % 10 == 5) {
-		devs_do_set(12, 1);
+		do_set(12, 1);
 	}
+
 	if (time % 10 == 6) {
 		event(2, 3);
+	}
+
+	if (time % 10 == 8) {
+		kick_dog();
 	}
 }
 #endif

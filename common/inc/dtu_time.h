@@ -9,7 +9,7 @@
  * <table>
  * <tr><th>Date       <th>Version <th>Author  <th>Description
  * <tr><td>2020-12-20 <td>1.0     <td>rock     <td>Create
- * <tr><td>2021-12-20 <td>1.0     <td>rock     <td>Create
+ * <tr><td>2021-12-20 <td>1.0     <td>rock     <td>Add Time convert APIs
  * </table>
  */
 #ifndef __DTU_TIME_H__
