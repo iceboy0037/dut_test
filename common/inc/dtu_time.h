@@ -31,6 +31,7 @@ struct time_stamp {
 	int	min;	// 分 	- 取值区间为[0, 59]
 	int	sec;	// 秒 	– 取值区间为[0, 59]
 	int	msec;	// 毫秒  - 取值区间为[0, 999]
+	int	isdst;	// 夏令时标识符，实行夏令时的时候，为正。不实行夏令时的进候，为0
 };
 
 #define RTC_TIME_BUF_LEN	sizeof(struct time_stamp)

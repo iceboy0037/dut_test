@@ -35,6 +35,7 @@ int get_time_stamp(struct time_stamp *ts)
 	ts->min		= p->tm_min;
 	ts->sec		= p->tm_sec;
 	ts->msec	= tv.tv_usec / 1000;
+	ts->isdst	= p->tm_isdst;
 
 	return 0;
 }
