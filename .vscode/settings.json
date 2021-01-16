@@ -16,6 +16,7 @@
 		"xutility": "cpp",
 		"algorithm": "c",
 		"xhash": "c",
-		"xtree": "c"
+		"xtree": "c",
+		"map": "c"
 	}
 }

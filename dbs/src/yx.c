@@ -75,18 +75,13 @@ int yx_read_single(char *value, int ptid, struct time_stamp *ts)
 		dbg("YX: %d Not Exists\n", ptid);
 		return -1;
 	}
-
-	if (ts == NULL) {
-		return 0;
+	if (ts != NULL) {
+		if (string_to_stamp(ts, desc.tm) != 0) {
+			dbg("Convert YX time stamp failed, string = %s\n", desc.tm);
+			return -1;
+		}
 	}
-
-	if (string_to_stamp(ts, desc.tm) != 0) {
-		dbg("Convert YX time stamp failed, string = %s\n", desc.tm);
-		return -1;
-	}
-
 	*value = (char)desc.value;
-
 	return 0;
 }
 

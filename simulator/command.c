@@ -366,7 +366,7 @@ static int shell_cmd_lsyx(int argc, char *argv)
 static int shell_cmd_time(int argc, char *argv)
 {
 	struct time_stamp ts;
-	char *day[] = { "ĞÇÆÚÈÕ", "ĞÇÆÚÒ»", "ĞÇÆÚ¶ş", "ĞÇÆÚÈı", "ĞÇÆÚËÄ", "ĞÇÆÚÎå", "ĞÇÆÚÁù"};
+	char *day[] = { "æ˜ŸæœŸæ—¥", "æ˜ŸæœŸä¸€", "æ˜ŸæœŸäºŒ", "æ˜ŸæœŸä¸‰", "æ˜ŸæœŸå››", "æ˜ŸæœŸäº”", "æ˜ŸæœŸå…­"};
 
 	get_time_stamp(&ts);
 	println("%04d-%02d-%02d %02d:%02d:%02d.%03d %s\n",

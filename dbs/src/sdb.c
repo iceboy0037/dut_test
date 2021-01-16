@@ -175,6 +175,9 @@ int sdb_select_single(char *cmd, struct sdb_map_t *map, void *base)
 	for (i = 0; i < cols; i++) {
 		addr = (ssize_t)base + map->array[i].offset;
 		switch (map->array[i].type) {
+		case PT_TYPE_CHAR:
+			*(char *)addr = atoi(result[index]);
+			break;
 		case PT_TYPE_INT:
 			*(int *)addr = atoi(result[index]);
 			break;
@@ -187,7 +190,7 @@ int sdb_select_single(char *cmd, struct sdb_map_t *map, void *base)
 		default:
 			break;
 		}
-		println("%-8s : %-8s\n", result[i], result[index]);
+		//println("%-8s : %-8s\n", result[i], result[index]);
 		index++;
 	}
 	sqlite3_free_table(result);

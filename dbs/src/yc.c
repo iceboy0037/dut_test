@@ -458,14 +458,13 @@ int yc_read_single(void *value, int id)
 	char key[STR_LEN];
 
 	sprintf(cmd, "select * from tbl_yc_desc where ptid=%d", id);
-	dbg("%s\n", cmd);
 	if (sdb_select_single(cmd, &sdb_map_yc_desc, &desc) != 0) {
 		dbg("read desc failed\n");
 		return -1;
 	}
 
 	sprintf(key, "yc:%s:%d", desc.alias, desc.ptid);
-	if (rdb_get_str(key, buf) != TRUE) {
+	if (rdb_get_str(key, buf) != 0) {
 		return -1;
 	}
 	*(float *)value = atof(buf);

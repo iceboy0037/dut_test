@@ -1,66 +1,38 @@
-TARGET = ./protocol.out
-CROSS_COMPILE =
-DEBUG=
-DEF = -DSIMULATOR -DIEC104 -DIEC101 -DA9APP
+LIB60870_HOME=../thirdparty/lib60870
 
-exclude_dirs = $(wildcard ./.git )
-exclude_dirs += $(wildcard ./.git/* )
-exclude_dirs += $(wildcard ./.git/*/* )
-exclude_dirs += $(wildcard ./.git/*/*/* )
-exclude_dirs += ../doc
+PROJECT_BINARY_NAME = ./cs104.out
+#PROJECT_SOURCES = ./src/cs104.c
 
 include_dirs = -I./
-include_dirs += -I./iec104/inc
-include_dirs += -I./iec104/src
-include_dirs += -I./common
-include_dirs += -I./common/inc
+include_dirs += -I./inc
+include_dirs += -I./src
+include_dirs += -I../common
+include_dirs += -I../common/inc
 
 include_dirs += -I./dbs
 include_dirs += -I./dbs/inc
 include_dirs += -I./dbs/src
 
-include_dirs += -I./devs
-include_dirs += -I./devs/inc
-include_dirs += -I./devs/src
-
-######################################################################################################################
-CC = $(CROSS_COMPILE)gcc
-CXX = $(CROSS_COMPILE)g++
-AR = $(CROSS_COMPILE)ar
-LD = $(CROSS_COMPILE)ld
-
-MV = mv -f
-RM = rm -rf
-LN = ln -sf
-
-LIBS = -lm -lpthread -lhiredis -lsqlite3
-CFLAG=-Wall -Wno-unused-result
-AFLAG=-Wall
-CFLAGS = -O0 $(DEBUG) -Wall -g $(include_dirs)
-
-AFLAGS = -g -Wall
-SOFLAGS =
-
 all_dirs = $(shell find . -maxdepth 4 -type d)
 link_dir = $(shell find . -maxdepth 4 -type l)
 all_dirs += $(foreach n, $(link_dir), $(shell find $(n)/ -maxdepth 4 -type d))
-
 DIRS = $(filter-out $(exclude_dirs), $(all_dirs))
 FILES = $(foreach dir, $(DIRS), $(wildcard $(dir)/*.s))
-CFILES = $(foreach dir, $(DIRS), $(wildcard $(dir)/*.c))
-
-OBJS = $(patsubst %.s, %.o, $(FILES))
+PROJECT_SOURCES = $(foreach dir, $(DIRS), $(wildcard $(dir)/*.c))
 OBJS += $(patsubst %.c, %.o, $(CFILES))
 
-VPATH =
-.c.o:
-	@$(CC) -c $(CFLAGS) $(DEF) $< -o $@
-.s.o:
-	@$(CC) -c $(AFLAGS) $(DEF) -D_asm $< -o $@
+include $(LIB60870_HOME)/make/target_system.mk
+include $(LIB60870_HOME)/make/stack_includes.mk
 
-$(TARGET):$(OBJS)
-	@$(CC) $(SOFLAGS) -o $@ $(OBJS) $(LIBS)
+LDLIBS += -lhiredis -lsqlite3
+CFLAGS += -g $(include_dirs) -Wall
+DEF = -DSIMULATOR -DM4FIRMWARE
+
+all:	$(PROJECT_BINARY_NAME)
+include $(LIB60870_HOME)/make/common_targets.mk
+
+$(PROJECT_BINARY_NAME):	$(PROJECT_SOURCES) $(LIB_NAME)
+	@$(CC) $(CFLAGS) $(LDFLAGS) $(DEF) -o $(PROJECT_BINARY_NAME) $(PROJECT_SOURCES) $(INCLUDES) $(LIB_NAME) $(LDLIBS)
 
 clean:
-	@$(RM) $(TARGET)
-	@$(RM) $(OBJS)
+	@rm -f $(PROJECT_BINARY_NAME)
