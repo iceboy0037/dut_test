@@ -434,8 +434,26 @@ int do_set_value(int index, int value);
 
 ### 4.4 电源板控制
 
-TBD
+#### 4.4.1 设置QDJ继电器接口
+```c
+/**
+ * @brief 设置QDJ继电器为 1 或 0
+ * @param  value            1 或 0
+ * @return int 0 - success
+ */
+int pwr_qdj_set(int value);
+```
 
+#### 4.4.2 设置活化继电器接口
+```c
+/**
+ * @brief 设置活化继电器
+ * @param  index            要设置活化继电器的编号
+ * @param  value            要设置的值 1 或 0
+ * @return int 0 - success
+ */
+int pwr_activation_set(int index, int value);
+```
 ### 4.5 遥测数据
 
 ADC采样后通过M4程序计算生成电力交采遥测数据，这一部分通过结构体进行数据组织，以方便管理访问，每个遥测数据定义为yc_valut_t结构体

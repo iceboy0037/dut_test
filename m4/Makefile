@@ -40,6 +40,8 @@ include_dirs += -I./dbs/src
 include_dirs += -I./devs
 include_dirs += -I./devs/inc
 include_dirs += -I./devs/src
+include_dirs += -I./relay/inc
+include_dirs += -I./relay/src
 
 ######################################################################################################################
 CC = $(CROSS_COMPILE)gcc

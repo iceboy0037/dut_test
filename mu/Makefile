@@ -1,7 +1,7 @@
 TARGET = ./A9_MU_APP.out
 CROSS_COMPILE = 
 DEBUG=
-DEF = -DA9APP
+DEF = -DA9APP -D_FILE_OFFSET_BITS=64
 
 exclude_dirs = $(wildcard ./.git )
 exclude_dirs += $(wildcard ./.git/* )
@@ -19,13 +19,19 @@ include_dirs += -I./devs
 include_dirs += -I./devs/inc
 include_dirs += -I./devs/src
 
+include_dirs += -I./dbs
+include_dirs += -I./dbs/inc
+include_dirs += -I./dbs/src
+
+include_dirs += -I./hiredis/include
+include_dirs += -I./sqlite/include
 ######################################################################################################################
 
 MV = mv -f
 RM = rm -rf
 LN = ln -sf
 
-LIBS += -lm -lpthread
+LIBS += -lm -lpthread -L./hiredis/lib/ -lhiredis -L./sqlite/lib -lsqlite3
 CFLAG  =-Wall -Wno-unused-result -O0 -pipe -g -feliminate-unused-debug-types
 AFLAG +=-Wall
 CFLAGS += $(DEBUG) -Wall -g $(include_dirs)

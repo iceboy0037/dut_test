@@ -21,10 +21,10 @@ extern "C" {
  * @brief 实时遥测存储结构
  */
 struct yc_value_t {
-	float	rating;		// 额定值
-	float	raw;		// 原始值
-	float	output;		// 原始值1次值
-	int	q;		// 品质
+	float	rating;				// 额定值
+	float	raw;				// 原始值
+	float	output;				// 原始值1次值
+	int	q;				// 品质
 };
 
 /**
@@ -50,6 +50,7 @@ struct yc_bus_t {
 	struct yc_value_t uc;
 	struct yc_value_t uab;
 	struct yc_value_t ubc;
+	struct yc_value_t uca;
 	struct yc_value_t u0;
 	struct yc_value_t f;
 };
@@ -82,35 +83,35 @@ struct yc_relay_bus_t {
 /**
  * @brief 线路保护遥测
  */
-struct yc_relay_line_t {	// 线路保护遥测值
-	float	ia1;		// 基波电流有效值
+struct yc_relay_line_t {				// 线路保护遥测值
+	float	ia1;					// 基波电流有效值
 	float	ib1;
 	float	ic1;
-	float	ia2;		// 二次谐波有效值
+	float	ia2;					// 二次谐波有效值
 	float	ib2;
 	float	ic2;
 };
 
-struct yc_misc_t {						// 其它遥测值
+struct yc_misc_t {					// 其它遥测值
 	union rtc_tm {
-		struct time_stamp rtc;				// 时间结构
-		char buff[RTC_TIME_BUF_LEN];			// 时间对应时分秒数组
+		struct time_stamp rtc;			// 时间结构
+		char buff[RTC_TIME_BUF_LEN];		// 时间对应时分秒数组
 	} tm;
-	int 	grid_freq;					// 电网频率
-	float	dc0;						// 直流0
-	float	dc1;						// 直流1
+	int 	grid_freq;				// 电网频率
+	float	dc0;					// 直流0
+	float	dc1;					// 直流1
 };
 
 // 总遥测表结构
 struct yc_table_t {
-	struct yc_bus_t		bus[BUS_NUMBER_MAX];		// 母线电压遥测
-	struct yc_line_t 	line[LINE_NUMBER_MAX];		// 线路遥测结构表
-	struct yc_relay_bus_t	rbus[BUS_NUMBER_MAX]; 		// 保护遥测值
-	struct yc_relay_line_t	rline[LINE_NUMBER_MAX];		// 保护线路遥测值
+	struct yc_bus_t		bus[BUS_NUMBER_MAX];			// 母线电压遥测
+	struct yc_line_t 	line[LINE_NUMBER_MAX];			// 线路遥测结构表
+	struct yc_relay_bus_t	rbus[BUS_NUMBER_MAX]; 			// 保护遥测值
+	struct yc_relay_line_t	rline[LINE_NUMBER_MAX];			// 保护线路遥测值
 };
 
-extern struct yc_table_t yc_tbl;				// 电气遥测表
-extern struct yc_misc_t yc_misc;				// 系统其它遥测值
+extern struct yc_table_t yc_tbl;	// 电气遥测表
+extern struct yc_misc_t yc_misc;	// 系统其它遥测值
 #ifdef __cplusplus
 }
 #endif
