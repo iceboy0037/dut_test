@@ -13,7 +13,41 @@
  */
 #include "notify.h"
 
+static int notify_status = 0;
 int notify_init(void)
+{
+	notify_status = 1;
+	return 0;
+}
+
+int notify_deinit(void)
+{
+	notify_status = 0;
+	return 0;
+}
+
+int notify_register(int group, int index, notify_callback callback, void *param)
+{
+	if (notify_status == 0) {
+		notify_init();
+	}
+	return 0;
+}
+
+int notify_unregister(int group, int index)
+{
+	if (notify_status == 0) {
+		notify_init();
+	}
+	return 0;
+}
+
+int notify_send(int group, int index)
+{
+	return 0;
+}
+
+int notify_response()
 {
 	return 0;
 }

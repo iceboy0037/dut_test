@@ -29,7 +29,7 @@ extern "C" {
 		#define flushout
 	#elif defined A9APP
 		#define println			printf
-		#define logd			printf	
+		#define logd			printf
 		#define flushout
 	#endif
 	#ifdef A9KERNEL

@@ -18,6 +18,29 @@
 extern "C" {
 #endif
 
+#include "list.h"
+
+#define NOTIFY_TABLE		1
+#define	NOTIFY_MESSAGE		0
+
+#define NOTIFY_GROUP_SHIFT 	(24)
+#define NOTIFY_INDEX_MASK 	(0x00ffffff)
+#define NOTIFY_GROUP_MASK 	(0xff << NOTIFY_GROUP_SHIFT)
+
+#define MKNID(group, index)	((group << 24) | (index & NOTIFY_INDEX_MASK))
+
+typedef	int (*notify_callback)(int, int, void *);
+struct list_head {
+	struct list_head *next;
+	struct list_head *prev;
+};
+struct notify_list_t {
+	int group;
+	int index;
+	void *param;
+	notify_callback	callback;
+	list_head list;
+};
 
 #ifdef __cplusplus
 }
