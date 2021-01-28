@@ -16,7 +16,7 @@
 
 #define log(fmt, arg...) printf(""fmt,##arg)
 
-void main() {
+void main_demo() {
     int quit = 0;
     int flag = 0;
     int opt, key;
@@ -40,7 +40,7 @@ void main() {
         log("\ninput options:");
         scanf("%d",  &opt);
         switch(opt){
-        
+
             //插入链表，相同结点可重复插入，也可以在加入前比较判断防止插入重复
             case 1:
                 pmsg = calloc(1, sizeof(struct msg));
@@ -61,19 +61,19 @@ void main() {
              case 2:
              flag = 0 ;
              log("input msg id:");
-             scanf("%d", &key);   
+             scanf("%d", &key);
 
              //遍历查询
              list_for_each_entry(pmsg, &msg_head, list) {
-                if(pmsg->msgid == key){ 
+                if(pmsg->msgid == key){
                     log("[msgid: %d, msginfo: %s ]\n", key, pmsg->msginfo);
                     flag = 1;
                     break;
                 }
              }
-             if(!flag)  
+             if(!flag)
                 log("%d not found! \n", key);
-             break;             
+             break;
 
              //查询所有
              case 3:
@@ -88,12 +88,12 @@ void main() {
              case 4:
                   flag = 0;
                   log("input msg id:");
-                  scanf("%d", &key);   
+                  scanf("%d", &key);
                   //修改
                   list_for_each_entry(pmsg, &msg_head, list) {
-                     if(pmsg->msgid == key){ 
+                     if(pmsg->msgid == key){
                          log("[msgid: %d, msginfo: %s ]\n", key, pmsg->msginfo);
-                         log("input msg you want to set:");        
+                         log("input msg you want to set:");
                          memset(pmsg->msginfo, 0, sizeof(pmsg->msginfo));
                          getchar();
                          gets(pmsg->msginfo);
@@ -106,11 +106,11 @@ void main() {
                   flag = 0;
                   break;
 
-             //删除     
+             //删除
              case 5:
                   flag = 0;
                   log("input msg id:");
-                  scanf("%d", &key);  
+                  scanf("%d", &key);
                   //遍历链表并且执行删除操作需要使用这个接口 _safe
                   list_for_each_safe(pos, n, &msg_head){
                       pmsg = list_entry(pos, struct msg, list);
@@ -134,8 +134,8 @@ void main() {
                       list_del(pos);
                       free(pmsg);
                   }
-                  break;  
-                  
+                  break;
+
              default:
                   //退出前释放资源
                   list_for_each_safe(pos, n, &msg_head){
@@ -143,7 +143,7 @@ void main() {
                       list_del(pos);
                       free(pmsg);
                   }
-                  
+
                   quit = 1;
                 break;
         }
