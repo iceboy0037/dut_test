@@ -69,6 +69,7 @@ int notify_register(int group, int index, void *callback, void *param)
 
 	return 0;
 }
+
 int notify_exec_key(int group, int index)
 {
 	int key = MKNID(group, index);
@@ -117,6 +118,7 @@ int notify_unregister(int group, int index)
 			return 0;
 		}
 	}
+
 	return 0;
 }
 
@@ -125,7 +127,7 @@ int notify_send(int group, int index)
 	return 0;
 }
 
-int notify_response()
+static void notify_handler(int sig, siginfo_t *info, void *ctx)
 {
-	return 0;
+
 }
