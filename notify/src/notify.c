@@ -13,14 +13,29 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include<signal.h>
 #include <hiredis/hiredis.h>
 #include "notify.h"
 
 static int notify_status = 0;
 static struct list_head notify_list_head;
+#ifdef NOTIFY_CLIENT
+static struct sigaction notify_action;
+static void notify_handler(int sig, siginfo_t *info, void *ctx)
+{
+	notify_exec_list();
+	printf("recv a sid=%d data=%d data=%d\n", sig, info->si_value.sival_int, info->si_int);
+}
+#endif
 int notify_init(void)
 {
 	INIT_LIST_HEAD(&notify_list_head);
+
+#ifdef NOTIFY_CLIENT
+	notify_action.handler = notify_handler;
+	sigemptyset(&notify_action.sa_mask);
+	notify_action.sa_flags = SA_SIGINFO;
+#endif
 	notify_status = 1;
 	return 0;
 }
@@ -89,7 +104,7 @@ int notify_exec_key(int group, int index)
 
 int notify_exec_list(void)
 {
-	struct nodify_list_t *item;
+	struct notify_list_t *item;
 
 	list_for_each_entry(item, &notify_list_head, list) {
 		if (item->callback != 0) {
@@ -97,6 +112,7 @@ int notify_exec_list(void)
 			}
 		}
 	}
+	return 0;
 }
 
 int notify_unregister(int group, int index)
@@ -125,9 +141,4 @@ int notify_unregister(int group, int index)
 int notify_send(int group, int index)
 {
 	return 0;
-}
-
-static void notify_handler(int sig, siginfo_t *info, void *ctx)
-{
-
 }
