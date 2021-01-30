@@ -7,6 +7,7 @@ exclude_dirs = $(wildcard ./.git )
 
 include_dirs = -I./
 include_dirs += -I./inc
+include_dirs += -I../dbs/inc/
 
 ######################################################################################################################
 CC = $(CROSS_COMPILE)gcc
