@@ -41,3 +41,7 @@ SDB_MAP_START(yx_desc)
 	SDB_MAP_ITEM(PT_TYPE_STRING,	struct yx_desc_t, aname)
 	SDB_MAP_ITEM(PT_TYPE_STRING,	struct yx_desc_t, attr)
 SDB_MAP_END(yx_desc)
+
+// SDB_MAP_START(param_desc)
+
+// SDB_MAP_END(param_desc)
