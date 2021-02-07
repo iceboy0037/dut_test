@@ -25,12 +25,14 @@ struct param_item_t {
 	int inf;					// 组内编码
 	char dname[NAME_LENGTH];			// 显示名
 	char alias[NAME_LENGTH];			// 变量名
+	char value[VALUE_LENGTH];			// 值
 	char def_val[VALUE_LENGTH];			// 默认值
 	char min_val[VALUE_LENGTH];			// 最小值
 	char max_val[VALUE_LENGTH];			// 最大值
 	char step[VALUE_LENGTH];			// 变化步长
 	char unit[UNIT_LENGTH];				// 单位
 	int dtype;					// 数据类型
+	char tm;					// 修改时间
 };
 
 // 电流线路配置表
