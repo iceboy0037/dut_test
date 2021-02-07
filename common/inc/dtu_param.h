@@ -17,6 +17,22 @@
 extern "C" {
 #endif
 
+// 参数项结构
+struct param_item_t {
+	int devid;					// 设备ID
+	int ptid;					// 点位ID
+	int fun;					// 功能号
+	int inf;					// 组内编码
+	char dname[NAME_LENGTH];			// 显示名
+	char alias[NAME_LENGTH];			// 变量名
+	char def_val[VALUE_LENGTH];			// 默认值
+	char min_val[VALUE_LENGTH];			// 最小值
+	char max_val[VALUE_LENGTH];			// 最大值
+	char step[VALUE_LENGTH];			// 变化步长
+	char unit[UNIT_LENGTH];				// 单位
+	int dtype;					// 数据类型
+};
+
 // 电流线路配置表
 struct line_config_t {
 	char name[NAME_LENGTH];				// 线路名称
