@@ -35,6 +35,24 @@ struct param_item_t {
 	char tm;					// 修改时间
 };
 
+// 系统信息结构
+struct system_info_t {
+	char category[STR_LEN];
+	char os[STR_LEN];
+	char manufacturer[STR_LEN];
+	char hwver[STR_LEN];
+	char fpgaver[STR_LEN];
+	char swver[STR_LEN];
+	char vercs[STR_LEN];
+	int iec104;					// 1 - 支持， 0 - 不支持
+	int iec101;
+	int iec61850;
+	char model[STR_LEN];
+	char devid[STR_LEN];
+	char mac1[STR_LEN];
+	char mac2[STR_LEN];
+};
+
 // 电流线路配置表
 struct line_config_t {
 	char name[NAME_LENGTH];				// 线路名称
@@ -44,6 +62,10 @@ struct line_config_t {
 	int  ib_index;
 	int  ic_index;
 	int  iz_index;
+	float ph_ct1;					// 相CT一次值
+	float ph_ct2;					// 相CT二次值
+	float z_ct1;					// 零序CT一次值
+	float z_ct2;					// 零序CT二次值
 };
 
 struct bus_config_t {
