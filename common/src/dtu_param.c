@@ -13,3 +13,24 @@
  */
 
 #include "dtu_param.h"
+
+
+int param_item_read_fun(struct param_item_t *item, int fun, int inf)
+{
+	return 0;
+}
+
+int param_item_read_ptid(struct param_item_t *item, int ptid)
+{
+	return 0;
+}
+
+int param_item_read_alias(struct param_item_t *item, char *alias)
+{
+	return 0;
+}
+
+int param_item_update(struct param_item_t *item)
+{
+	return 0;
+}
