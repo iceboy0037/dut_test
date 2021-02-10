@@ -83,10 +83,10 @@ def InitYxTable(table, cursor, did):
 				(int(table.row_values(i)[3]) << 16) + int(table.row_values(i)[4]),
 				int(table.row_values(i)[3]),	# fun
 				int(table.row_values(i)[4]),	# inf
-				table.row_values(i)[5],			# dname
-				table.row_values(i)[6],			# alias
+				table.row_values(i)[5],		# dname
+				table.row_values(i)[6],		# alias
 				int(table.row_values(i)[7]),	# value
-				table.row_values(i)[8],			# tm
+				table.row_values(i)[8],		# tm
 				int(table.row_values(i)[9]),	# count
 				table.row_values(i)[10],
 				table.row_values(i)[11],
@@ -101,11 +101,17 @@ tables = [
 	{
 		"name" : "tbl_sys",
 		"cmd" : "create table tbl_sys \
-			(	id 	integer primary key autoincrement not null,\
-				desc 	text not null,\
-				name 	text not null,\
-				ptid 	integer not null,\
-				type 	text not null\
+			(	devid	integer not null,\
+				ptid 	integer primary key not null,\
+				fun	integer not null,\
+				inf 	integer not null,\
+				dname	text not null,\
+				alias	text not null,\
+				value	text not null,\
+				dtype	text not null,\
+				tm	text not null,\
+				rw	int not null,\
+				unit	text not null,\
 			);"
 	},
 
