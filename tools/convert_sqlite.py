@@ -99,6 +99,7 @@ devid = 0xff
 tables = [
 	# System parameters
 	{
+		"sheet": "",
 		"name" : "tbl_sys",
 		"cmd" : "create table tbl_sys \
 			(	devid	integer not null,\
@@ -117,6 +118,7 @@ tables = [
 
 	# Run parameters
 	{
+		"sheet": "",
 		"name" : "tbl_run",
 		"cmd" : "create table tbl_run \
 			(	id 	integer primary key autoincrement not null,\
@@ -138,6 +140,7 @@ tables = [
 
 	# YC description table
 	{
+		"sheet": "",
 		"name" : "tbl_yc_desc",
 		"cmd" : "create table tbl_yc_desc \
 			(	devid	integer not null,\
@@ -153,6 +156,7 @@ tables = [
 
 	# Protocol transfer table
 	{
+		"sheet": "",
 		"name": "tbl_trans",
 		"cmd" : "create table tbl_trans \
 			(	id 	integer primary key autoincrement not null,\
@@ -165,6 +169,7 @@ tables = [
 
 	# YC value tables
 	{
+		"sheet": "",
 		"name" : "tbl_yc_value",
 		"cmd" : "create table if not exists tbl_yc_value \
 			(\
@@ -175,6 +180,7 @@ tables = [
 
 	# YX table
 	{
+		"sheet": "",
 		"name" : "tbl_yx",
 		"cmd" : "create table if not exists tbl_yx \
 			(\
