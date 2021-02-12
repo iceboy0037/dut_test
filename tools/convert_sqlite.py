@@ -54,9 +54,22 @@ def InitDescTable(table, cursor, devid):
 				))
 	return
 
-def InitSysTable(table, cursor):
+def InitSysTable(table, cursor, did):
 	for i in range(1, table.nrows):
-		print()
+		ret = cursor.execute("insert into tbl_sys (devid, ptid, fun, inf, dname, alias, value, dtype, tm, rw, unit)\
+				values (%d, %d, %d, %d, '%s', '%s', %d, '%s', '%s', '%s', %d, '%s')" %
+				(did,
+				(int(table.row_values(i)[3]) << 16) + int(table.row_values(i)[4]),
+				int(table.row_values(i)[3]),	# fun
+				int(table.row_values(i)[4]),	# inf
+				table.row_values(i)[5],		# dname
+				table.row_values(i)[6],		# alias
+				int(table.row_values(i)[7]),	# value
+				table.row_values(i)[8],		# dtype
+				table.row_values(i)[8],		# tm
+				int(table.row_values(i)[9]),	# rw
+				table.row_values(i)[10],	# unit
+				))
 	return
 
 def InitYxTable(table, cursor, did):
