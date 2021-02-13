@@ -14,19 +14,29 @@
 
 #include "dtu_param.h"
 
-
-int param_item_read_fun(struct param_item_t *item, int fun, int inf)
-{
-	return 0;
-}
-
 int param_item_read_ptid(struct param_item_t *item, int ptid)
 {
+	char cmd[SQL_CMD_LEN] = { 0 };
+
+	snprintf(cmd, SQL_CMD_LEN, "select * from tbl_yx where ptid=%d", ptid);
+	if (sdb_select_single(cmd, &sdb_map_param_item_desc, item) != 0) {
+		dbg("read desc failed, ptid = %d\n", ptid);
+		return -1;
+	}
+
 	return 0;
 }
 
 int param_item_read_alias(struct param_item_t *item, char *alias)
 {
+	char cmd[SQL_CMD_LEN] = { 0 };
+
+	snprintf(cmd, SQL_CMD_LEN, "select * from tbl_yx where alias=%s", alias);
+	if (sdb_select_single(cmd, &sdb_map_param_item_desc, item) != 0) {
+		dbg("read desc failed, ptid = %s\n", alias);
+		return -1;
+	}
+
 	return 0;
 }
 
