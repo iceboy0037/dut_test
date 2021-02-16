@@ -17,6 +17,9 @@
 		"algorithm": "c",
 		"xhash": "c",
 		"xtree": "c",
-		"map": "c"
+		"map": "c",
+		"dtu.h": "c",
+		"dtu_limits.h": "c",
+		"dbg.h": "c"
 	}
 }

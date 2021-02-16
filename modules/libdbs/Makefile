@@ -1,6 +1,6 @@
 TARGET = ./libdbs.so
 CROSS_COMPILE =
-DEBUG=
+DEBUG=-DSIMULATOR
 LIBS = -lm -lpthread -lhiredis -lsqlite3
 
 exclude_dirs = $(wildcard ./.git )
@@ -12,6 +12,7 @@ include_dirs = -I./
 include_dirs += -I./inc
 include_dirs += -I../common
 include_dirs += -I../common/inc
+include_dirs += -I../../include
 
 ######################################################################################################################
 CC = $(CROSS_COMPILE)gcc
@@ -25,10 +26,10 @@ LN = ln -sf
 
 CFLAG=-Wall -Wno-unused-result
 AFLAG=-Wall
-CFLAGS = -O0 $(DEBUG) -Wall -g $(include_dirs) -fpic
+CFLAGS = -O0 $(DEBUG) -Wall -g $(include_dirs) -fPIC
 
 AFLAGS = -g -Wall
-SOFLAGS = -shared -fpic
+SOFLAGS = -shared -fPIC
 
 all_dirs = $(shell find . -maxdepth 3 -type d)
 DIRS = $(filter-out $(exclude_dirs), $(all_dirs))

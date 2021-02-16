@@ -33,10 +33,10 @@ struct pt_map_array_t {
 	int	count;
 	struct pt_map_t *map;
 };
-#define PT_MAP_START(name)				struct pt_map_t name##_pt_map_entry[] = {
+#define PT_MAP_START(name)				static struct pt_map_t name##_pt_map_entry[] = {
 #define	PT_ITEM(name, type, base, value)		{(name), (type), sizeof(base), offsetof(base, value)},
 #define	PT_MAP_END(name)				{NULL, PT_TYPE_INVALID, 0, 0}};\
-							struct pt_map_array_t name##_pt_array = {#name, \
+							static struct pt_map_array_t name##_pt_array = {#name, \
 								(sizeof(name##_pt_map_entry) / sizeof(struct pt_map_t) - 1), name##_pt_map_entry};\
 							static struct pt_map_array_t *get_map_entry_##name(void) { return &name##_pt_array;}
 
