@@ -76,11 +76,13 @@ static redisContext *rdb_connect(void)
 	}
 	return ctx;
 }
+
 static int rdb_disconnect(redisContext *ctx)
 {
-	//redisClose(ctx);
+	redisFree(ctx);
 	return 0;
 }
+
 int notify_set_rdb(pid_t pid, int key)
 {
 	redisReply *reply;
