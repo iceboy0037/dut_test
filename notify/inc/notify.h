@@ -31,7 +31,7 @@ extern "C" {
 
 struct notify_list_t {
 	int key;
-	int param;
+	int arg;
 	int (*callback)(int);
 	struct list_head list;
 };

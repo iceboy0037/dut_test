@@ -84,13 +84,13 @@ static int rdb_disconnect(redisContext *ctx)
 	return 0;
 }
 
-int notify_set_rdb(pid_t pid, int key)
+int notify_set_rdb(pid_t pid, int key, int arg)
 {
 	redisReply *reply;
 	redisContext *ctx = rdb_connect();
 
 	if (ctx == NULL) {
-		dbg("failed\n");
+		dbg("Connect RDB failed\n");
 		return -1;
 	}
 
@@ -104,13 +104,15 @@ int notify_set_rdb(pid_t pid, int key)
 		}
 	}
 
-	reply = redisCommand(ctx,"SET notify:%08d:%08d", key, (int)pid);
+	dbg("SET notify:%08d:%08d %d", key, (int)pid, arg);
+	reply = redisCommand(ctx,"SET notify:%08d:%08d %08d", key, (int)pid, arg);
 	if (reply) {
+		println(" Successed\n");
 		freeReplyObject(reply);
 		rdb_disconnect(ctx);
 		return 0;
 	}
-
+	println("Failed\n");
 	rdb_disconnect(ctx);
 	return -1;
 }
@@ -135,7 +137,7 @@ int notify_send(int key)
 			memcpy(key_buf, &reply->element[i]->str[7], 8);
 			key = atoi(key_buf);
 			pid = atoi(&reply->element[i]->str[16]);
-			dbg("pid: %08d, key = %d\n", pid, key);
+			dbg("Send signal to pid: %08d, key = %d\n", pid, key);
 			v.sival_int = key;
 			sigqueue(pid, SIGINT, v);
 			freeReplyObject(reply->element[i]);
@@ -145,7 +147,7 @@ int notify_send(int key)
 	return 0;
 }
 
-int notify_register(int group, int index, void *callback, int param)
+int notify_register(int group, int index, void *callback, int arg)
 {
 	pid_t pid = getpid();
 	int key = MKNID(group, index);
@@ -162,8 +164,9 @@ int notify_register(int group, int index, void *callback, int param)
 		}
 	}
 
-	if (notify_set_rdb(pid, key) != 0) {
+	if (notify_set_rdb(pid, key, arg) != 0) {
 		dbg("Register failed\n");
+		return -1;
 	}
 
 	item = (struct notify_list_t *)malloc(sizeof(struct notify_list_t));
@@ -172,7 +175,7 @@ int notify_register(int group, int index, void *callback, int param)
 	}
 	item->key = key;
 	item->callback = callback;
-	item->param = param;
+	item->arg = arg;
 
 	// Insert to list
 	list_add_tail(&item->list, &notify_list_head);
@@ -190,7 +193,7 @@ int notify_exec_key(int group, int index)
 			continue;
 		}
 		if (item->callback != 0) {
-			if ((*item->callback)(item->param) != 0) {
+			if ((*item->callback)(item->arg) != 0) {
 			}
 		}
 	}
@@ -203,7 +206,7 @@ int notify_exec_list(void)
 
 	list_for_each_entry(item, &notify_list_head, list) {
 		if (item->callback != 0) {
-			if ((*item->callback)(item->param) != 0) {
+			if ((*item->callback)(item->arg) != 0) {
 			}
 		}
 	}
@@ -216,7 +219,7 @@ int notify_print_list(void)
 	struct notify_list_t *item;
 
 	list_for_each_entry(item, &notify_list_head, list) {
-		println("%03d: key = %08x, param = %08x\n", i, item->key, item->param);
+		println("%03d: key = %08x, arg = %08x\n", i, item->key, item->arg);
 		i++;
 	}
 	return 0;
@@ -243,4 +246,9 @@ int notify_unregister(int group, int index)
 	}
 
 	return 0;
+}
+
+void notify_handler(int sig, siginfo_t *info, int arg)
+{
+	printf("recv a sid=%d data=%d data=%d\n", sig, info->si_value.sival_int, info->si_int);
 }
