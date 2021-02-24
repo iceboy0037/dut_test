@@ -10,6 +10,9 @@ int notify_callback(int param)
 int main(int argc, char *argv[])
 {
 	printf("Register callback to notify\n");
-	notify_register(1, 1, notify_callback);
+	for (int i = 0; i < 10; i++) {
+		notify_register(1, i, notify_callback, i);
+	}
+	notify_print_list();
 	return 0;
 }

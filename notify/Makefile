@@ -1,13 +1,14 @@
 TARGET = ./notify.out
 CROSS_COMPILE =
-DEBUG=
+DEBUG=-DA9APP
 LIBS = -lm -lpthread -lhiredis -lsqlite3
 
-exclude_dirs = $(wildcard ./.git )
+#exclude_dirs = $(wildcard ./.git )
 
 include_dirs = -I./
 include_dirs += -I./inc
 include_dirs += -I../dbs/inc/
+include_dirs += -I../common/inc/
 
 ######################################################################################################################
 CC = $(CROSS_COMPILE)gcc

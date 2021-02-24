@@ -16,6 +16,7 @@
 #include <string.h>
 #include <signal.h>
 #include <hiredis/hiredis.h>
+#include "dbg.h"
 #include "rdb.h"
 #include "notify.h"
 
@@ -26,7 +27,7 @@ static struct sigaction notify_action;
 static void notify_handler(int sig, siginfo_t *info, void *ctx)
 {
 	notify_exec_list();
-	printf("recv a sid=%d data=%d data=%d\n", sig, info->si_value.sival_int, info->si_int);
+	dbg("recv a sid=%d data=%d data=%d\n", sig, info->si_value.sival_int, info->si_int);
 }
 #endif
 int notify_init(void)
@@ -66,10 +67,10 @@ static redisContext *rdb_connect(void)
 	ctx = redisConnectWithTimeout(RDB_HOST, RDB_PORT, timeout);
 	if (ctx == NULL || ctx->err) {
 		if (ctx) {
-			printf("Connection error: %s\n", ctx->errstr);
+			dbg("Connection error: %s\n", ctx->errstr);
 			redisFree(ctx);
 		} else {
-			printf("Connection error: can't allocate redis context\n");
+			dbg("Connection error: can't allocate redis context\n");
 		}
 
 		return NULL;
@@ -89,14 +90,14 @@ int notify_set_rdb(pid_t pid, int key)
 	redisContext *ctx = rdb_connect();
 
 	if (ctx == NULL) {
-		printf("failed\n");
+		dbg("failed\n");
 		return -1;
 	}
 
 	reply = (redisReply *)redisCommand(ctx, "exists notify:%08d:%08d", key, (int)pid);
 	if (reply->type == REDIS_REPLY_INTEGER) {
 		if (reply->integer == 1) {
-			printf("Already exists\n");
+			dbg("Already exists\n");
 			freeReplyObject(reply);
 			rdb_disconnect(ctx);
 			return -1;
@@ -123,18 +124,18 @@ int notify_send(int key)
 	redisContext *ctx = rdb_connect();
 
 	if (ctx == NULL) {
-		printf("failed\n");
+		dbg("failed\n");
 		return -1;
 	}
 
-	sprintf(key_buf, "notify:%08d:*", key);
+	dbg(key_buf, "notify:%08d:*", key);
 	reply = (redisReply *)redisCommand(ctx, "keys notify:%08d:*", key);
 	if (reply != NULL && reply->type == REDIS_REPLY_ARRAY) {
 		for (int i = 0; i < reply->elements; i++) {
 			memcpy(key_buf, &reply->element[i]->str[7], 8);
 			key = atoi(key_buf);
 			pid = atoi(&reply->element[i]->str[16]);
-			printf("pid: %08d, key = %d\n", pid, key);
+			dbg("pid: %08d, key = %d\n", pid, key);
 			v.sival_int = key;
 			sigqueue(pid, SIGINT, v);
 			freeReplyObject(reply->element[i]);
@@ -144,7 +145,7 @@ int notify_send(int key)
 	return 0;
 }
 
-int notify_register(int group, int index, void *callback, void *param)
+int notify_register(int group, int index, void *callback, int param)
 {
 	pid_t pid = getpid();
 	int key = MKNID(group, index);
@@ -162,7 +163,7 @@ int notify_register(int group, int index, void *callback, void *param)
 	}
 
 	if (notify_set_rdb(pid, key) != 0) {
-		printf("Register failed\n");
+		dbg("Register failed\n");
 	}
 
 	item = (struct notify_list_t *)malloc(sizeof(struct notify_list_t));
@@ -171,6 +172,7 @@ int notify_register(int group, int index, void *callback, void *param)
 	}
 	item->key = key;
 	item->callback = callback;
+	item->param = param;
 
 	// Insert to list
 	list_add_tail(&item->list, &notify_list_head);
@@ -204,6 +206,18 @@ int notify_exec_list(void)
 			if ((*item->callback)(item->param) != 0) {
 			}
 		}
+	}
+	return 0;
+}
+
+int notify_print_list(void)
+{
+	int i = 0;
+	struct notify_list_t *item;
+
+	list_for_each_entry(item, &notify_list_head, list) {
+		println("%03d: key = %08x, param = %08x\n", i, item->key, item->param);
+		i++;
 	}
 	return 0;
 }
