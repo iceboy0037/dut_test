@@ -13,6 +13,8 @@ int notify_callback(int param)
 int server(void)
 {
 	char c;
+
+	notify_init(NOTIFY_SERVER);
 	while (1) {
 		c = getchar();
 		switch (c) {
@@ -29,6 +31,7 @@ int server(void)
 }
 int client(void)
 {
+	notify_init(NOTIFY_CLIENT);
 	printf("Register callback to notify\n");
 	for (int i = 0; i < 10; i++) {
 		notify_register(1, i, notify_callback, i);

@@ -16,30 +16,32 @@
 #include <string.h>
 #include <signal.h>
 #include <hiredis/hiredis.h>
+#include "notify.h"
 #include "dbg.h"
 #include "rdb.h"
-#include "notify.h"
 
 static int notify_status = 0;
 static struct list_head notify_list_head;
-#ifdef NOTIFY_CLIENT
 static struct sigaction notify_action;
-static void notify_handler(int sig, siginfo_t *info, void *ctx)
+static int notify_exec_list(void);
+static void notify_handler(int sig, siginfo_t *info, void *arg)
 {
 	notify_exec_list();
-	dbg("recv a sid=%d data=%d data=%d\n", sig, info->si_value.sival_int, info->si_int);
+	dbg("recv a sid=%d data=%d data=%d, arg = %p\n",
+		sig, info->si_value.sival_int, info->si_int, arg);
 }
-#endif
-int notify_init(void)
+int notify_init(int mode)
 {
 	INIT_LIST_HEAD(&notify_list_head);
 
-#ifdef NOTIFY_CLIENT
-	notify_action.handler = notify_handler;
-	sigemptyset(&notify_action.sa_mask);
-	notify_action.sa_flags = SA_SIGINFO;
-#endif
+	if (mode == NOTIFY_CLIENT) {
+		notify_action.sa_sigaction = notify_handler;
+		sigemptyset(&notify_action.sa_mask);
+		notify_action.sa_flags = SA_SIGINFO;
+	}
+
 	notify_status = 1;
+
 	return 0;
 }
 
@@ -56,6 +58,7 @@ int notify_deinit(void)
 		free(item);
 	}
 	notify_status = 0;
+
 	return 0;
 }
 
@@ -75,6 +78,7 @@ static redisContext *rdb_connect(void)
 
 		return NULL;
 	}
+
 	return ctx;
 }
 
@@ -114,6 +118,7 @@ int notify_set_rdb(pid_t pid, int key, int arg)
 	}
 	println("Failed\n");
 	rdb_disconnect(ctx);
+
 	return -1;
 }
 
@@ -154,7 +159,8 @@ int notify_register(int group, int index, void *callback, int arg)
 	struct notify_list_t *item = NULL;
 
 	if (notify_status == 0) {
-		notify_init();
+		println("Nofity module NOT initialized!\n");
+		return -1;
 	}
 
 	list_for_each_entry(item, &notify_list_head, list) {
@@ -233,7 +239,8 @@ int notify_unregister(int group, int index)
 	struct notify_list_t *item;
 
 	if (notify_status == 0) {
-		notify_init();
+		println("Nofity module NOT initialized!\n");
+		return -1;
 	}
 
 	list_for_each_safe(pos, n, &notify_list_head) {
@@ -246,9 +253,4 @@ int notify_unregister(int group, int index)
 	}
 
 	return 0;
-}
-
-void notify_handler(int sig, siginfo_t *info, int arg)
-{
-	printf("recv a sid=%d data=%d data=%d\n", sig, info->si_value.sival_int, info->si_int);
 }

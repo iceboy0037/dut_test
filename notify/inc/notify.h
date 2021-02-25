@@ -22,6 +22,8 @@ extern "C" {
 
 #define NOTIFY_TABLE		1
 #define	NOTIFY_MESSAGE		0
+#define	NOTIFY_SERVER		0
+#define NOTIFY_CLIENT		1
 
 #define NOTIFY_GROUP_SHIFT 	(24)
 #define NOTIFY_INDEX_MASK 	(0x00ffffff)
@@ -35,6 +37,13 @@ struct notify_list_t {
 	int (*callback)(int);
 	struct list_head list;
 };
+
+extern int notify_send(int key);
+extern int notify_deinit(void);
+extern int notify_init(int mode);
+extern int notify_register(int group, int index, void *callback, int arg);
+extern int notify_print_list(void);
+extern int notify_unregister(int group, int index);
 
 #ifdef __cplusplus
 }
