@@ -14,6 +14,7 @@ int server(void)
 {
 	char c;
 
+	println("Notify Server Test program\n");
 	notify_init(NOTIFY_SERVER);
 	while (1) {
 		c = getchar();
@@ -29,12 +30,14 @@ int server(void)
 	}
 	return 0;
 }
+
 int client(void)
 {
 	notify_init(NOTIFY_CLIENT);
+	println("Notify Server Client program\n");
 	printf("Register callback to notify\n");
 	for (int i = 0; i < 10; i++) {
-		notify_register(1, i, notify_callback, i);
+		notify_register(0, i, notify_callback, i);
 	}
 	notify_print_list();
 	while (1) {
@@ -46,17 +49,17 @@ int client(void)
 
 int main(int argc, char *argv[])
 {
-	if (argc != 2) {
-		println("\nusage: notify <opt>\n");
-		println("\ts\t- Server\n");
-		println("\tc\t- Client\n");
-		return -1;
-	}
+	// if (argc != 2) {
+	// 	println("\nusage: notify <opt>\n");
+	// 	println("\ts\t- Server\n");
+	// 	println("\tc\t- Client\n");
+	// 	return -1;
+	// }
 
-	if (argv[1][0] == 's') {
-		server();
-	} else {
-		client();
-	}
+#ifdef TEST_SERVER
+	server();
+#else
+	client();
+#endif
 	return 0;
 }

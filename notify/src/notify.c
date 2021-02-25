@@ -26,9 +26,9 @@ static struct sigaction notify_action;
 static int notify_exec_list(void);
 static void notify_handler(int sig, siginfo_t *info, void *arg)
 {
-	notify_exec_list();
 	dbg("recv a sid=%d data=%d data=%d, arg = %p\n",
 		sig, info->si_value.sival_int, info->si_int, arg);
+	notify_exec_list();
 }
 int notify_init(int mode)
 {
@@ -135,7 +135,7 @@ int notify_send(int key)
 		return -1;
 	}
 
-	dbg(key_buf, "notify:%08d:*", key);
+	sprintf(key_buf, "notify:%08d:*", key);
 	reply = (redisReply *)redisCommand(ctx, "keys notify:%08d:*", key);
 	if (reply != NULL && reply->type == REDIS_REPLY_ARRAY) {
 		for (int i = 0; i < reply->elements; i++) {
