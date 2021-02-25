@@ -18,9 +18,16 @@ int server(void)
 	notify_init(NOTIFY_SERVER);
 	while (1) {
 		c = getchar();
+		if (c >= '0' && c <= '9') {
+			notify_send(c - '0');
+			continue;
+		}
 		switch (c) {
 		case 's':
 			notify_send(0);
+			break;
+		case 'p':
+			notify_print_list();
 			break;
 		case 'q':
 			exit(0);

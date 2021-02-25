@@ -15,25 +15,31 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <errno.h>
 #include <hiredis/hiredis.h>
 #include "notify.h"
 #include "dbg.h"
 #include "rdb.h"
 
 static int notify_status = 0;
+static int notify_mode = NOTIFY_CLIENT;
 static struct list_head notify_list_head;
 static struct sigaction notify_action;
 static int notify_exec_list(void);
+static int is_pid_avail(int pid);
+
 static void notify_handler(int sig, siginfo_t *info, void *arg)
 {
 	dbg("recv a sid=%d data=%d data=%d, arg = %p\n",
 		sig, info->si_value.sival_int, info->si_int, arg);
+	fflush(stdout);
 	notify_exec_list();
 }
 int notify_init(int mode)
 {
 	INIT_LIST_HEAD(&notify_list_head);
 
+	notify_mode = mode;
 	if (mode == NOTIFY_CLIENT) {
 		notify_action.sa_sigaction = notify_handler;
 		sigemptyset(&notify_action.sa_mask);
@@ -135,17 +141,20 @@ int notify_send(int key)
 		return -1;
 	}
 
-	sprintf(key_buf, "notify:%08d:*", key);
 	reply = (redisReply *)redisCommand(ctx, "keys notify:%08d:*", key);
 	if (reply != NULL && reply->type == REDIS_REPLY_ARRAY) {
+		dbg("Event for %d counts = %d\n", key, (int)reply->elements);
 		for (int i = 0; i < reply->elements; i++) {
 			memcpy(key_buf, &reply->element[i]->str[7], 8);
 			key = atoi(key_buf);
 			pid = atoi(&reply->element[i]->str[16]);
 			dbg("Send signal to pid: %08d, key = %d\n", pid, key);
-			v.sival_int = key;
-			sigqueue(pid, SIGINT, v);
-			freeReplyObject(reply->element[i]);
+			if (is_pid_avail(pid)) {
+				v.sival_int = key;
+				sigqueue(pid, SIGINT, v);
+			} else {
+				redisCommand(ctx, "del %s", reply->element[i]->str);
+			}
 		}
 		freeReplyObject(reply);
 	}
@@ -219,10 +228,48 @@ int notify_exec_list(void)
 	return 0;
 }
 
+static int is_pid_avail(int pid)
+{
+	 if (kill(pid, 0) && errno == ESRCH) {
+		 return 0;
+	 }
+	 return 1;
+}
+
 int notify_print_list(void)
 {
 	int i = 0;
+	int key;
+	int pid;
 	struct notify_list_t *item;
+	char key_buf[RDB_KEY_LEN] = { 0 };
+	redisReply *reply;
+	redisContext *ctx = rdb_connect();
+
+	if (notify_mode == NOTIFY_SERVER) {
+		reply = (redisReply *)redisCommand(ctx, "keys notify*");
+		if (reply == NULL || reply->type != REDIS_REPLY_ARRAY || reply->elements == 0) {
+			println("Empty\n");
+			return 0;
+		}
+
+		for (i = 0; i < reply->elements; i++) {
+			println("%3d: %s, ", i, reply->element[i]->str);
+			memcpy(key_buf, &reply->element[i]->str[7], 8);
+			key = atoi(key_buf);
+			pid = atoi(&reply->element[i]->str[16]);
+			println("key = %-8d, pid = %-8d, ", key, pid);
+			if (is_pid_avail(pid)) {
+				println("available\n");
+			} else {
+				redisCommand(ctx, "del %s", reply->element[i]->str);
+				println("invalid\n");
+			}
+		}
+		freeReplyObject(reply);
+
+		return 0;
+	}
 
 	list_for_each_entry(item, &notify_list_head, list) {
 		println("%03d: key = %08x, arg = %08x\n", i, item->key, item->arg);
