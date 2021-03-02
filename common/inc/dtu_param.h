@@ -13,6 +13,9 @@
  */
 #ifndef __DTU_PARAM_H__
 #define __DTU_PARAM_H__
+
+#include "dtu_limits.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

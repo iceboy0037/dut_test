@@ -12,7 +12,11 @@
  * </table>
  */
 
+#include <stdio.h>
+#include "dbg.h"
 #include "dtu_param.h"
+#include "tables.h"
+#include "sdb.h"
 
 int param_item_read_ptid(struct param_item_t *item, int ptid)
 {
