@@ -1,5 +1,5 @@
 TARGET = ./simulator.out
-CROSS_COMPILE =
+CROSS_COMPILE =arm-fsl-linux-gnueabi-
 DEBUG=
 LIBS = -lm -lpthread -lhiredis -lsqlite3
 
@@ -40,12 +40,12 @@ OBJS += $(patsubst %.c, %.o, $(CFILES))
 
 VPATH =
 .c.o:
-	@$(CC) -c $(CFLAGS) $(DEF) $< -o $@
+	$(CC) -c $(CFLAGS) $(DEF) $< -o $@
 .s.o:
-	@$(CC) -c $(AFLAGS) $(DEF) -D_asm $< -o $@
+	$(CC) -c $(AFLAGS) $(DEF) -D_asm $< -o $@
 
 $(TARGET):$(OBJS)
-	@$(CC) $(SOFLAGS) -o $@ $(OBJS) $(LIBS)
+	$(CC) $(SOFLAGS) -o $@ $(OBJS) $(LIBS)
 
 clean:
 	@$(RM) $(TARGET)

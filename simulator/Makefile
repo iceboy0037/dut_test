@@ -1,5 +1,5 @@
 TARGET = ./simulator.out
-CROSS_COMPILE =
+CROSS_COMPILE =arm-fsl-linux-gnueabi-
 DEBUG=
 LIBS = -lm -lpthread -lhiredis -lsqlite3
 DEF = -DSIMULATOR
@@ -15,6 +15,8 @@ include_dirs = -I./
 include_dirs += -I./inc
 include_dirs += -I../common
 include_dirs += -I../common/inc
+include_dirs += -I../thirdparty/sqlite/build/include
+include_dirs += -I../thirdparty/hiredis/build/include
 
 include_dirs += -I./dbs
 include_dirs += -I./dbs/inc
@@ -36,10 +38,10 @@ LN = ln -sf
 
 CFLAG=-Wall -Wno-unused-result
 AFLAG=-Wall
-CFLAGS = -O0 $(DEBUG) -Wall -g $(include_dirs)
+CFLAGS = -O0 $(DEBUG) -Wall -g $(include_dirs) -std=c99
 
 AFLAGS = -g -Wall
-SOFLAGS =
+SOFLAGS = -L../thirdparty/hiredis
 
 all_dirs = $(shell find . -maxdepth 4 -type d)
 link_dir = $(shell find . -maxdepth 4 -type l)
