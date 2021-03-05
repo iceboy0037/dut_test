@@ -93,7 +93,9 @@ int param_gain_sync(void)
 		dbg("Read Gain failed\n");
 		return -1;
 	}
-
+#ifndef SIMULATOR
 	// TODO: Set gain array to M4
+#else
+#endif
 	return 0;
 }
