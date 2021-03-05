@@ -13,37 +13,19 @@
  */
 #ifndef __YX_H__
 #define __YX_H__
+
+#include "tables.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * @brief 遥信点位描述结构，对应于数据库中的表结构
- */
-struct yx_desc_t {
-	int	devid;				// 设备ID号
-	int	ptid;				// 点位ID号
-	int	fun;				// 功能号
-	int	inf;				// 信息编号
-	char	dname[STR_LEN];			// 显示名，可中文
-	char	alias[STR_LEN];			// 英文别名，也是编程中的变量名
-	char	value;				// 遥信值都是0或1，统一定义为char
-	char	resv[3];
-	char	tm[TM_STR_LEN];			// 设置时间
-	int	count;				// 计数
-	char	tname[STR_LEN];			// 类别描述
-	char	type[STR_LEN];			// 类别
-	char	aname[STR_LEN];			// 属性描述
-	char	attr[STR_LEN];			// 属性
-};
-
 /**
  * @brief Read YX desc structure single
  * @param  desc	Return value
  * @param  ptid	Point ID
  * @return int 0 - success
  */
-extern int yx_read_desc_single(struct yx_desc_t *desc, int ptid);
+extern int yx_read_desc_single(struct tbl_yx_t *desc, int ptid);
 
 /**
  * @brief Save a YX value by Point ID

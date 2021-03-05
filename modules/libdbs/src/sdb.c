@@ -198,3 +198,33 @@ int sdb_select_single(char *cmd, struct sdb_map_t *map, void *base)
 
 	return 0;
 }
+
+/**
+ * @brief Update table
+ * @param  cmd	command string
+ * @return int
+ */
+int sdb_update(char *cmd)
+{
+	char *zErrMsg = 0;
+	int rc;
+	char *sql;
+	const char* data = "Callback function called";
+
+	sqlite3 *db = sdb_open(SDB_DEFAULT_PATH);
+	if (db == NULL) {
+		return -1;
+	}
+
+	/* Execute SQL statement */
+	rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
+	if ( rc != SQLITE_OK ){
+		dbg("SQL error: %s\n", zErrMsg);
+		sqlite3_free(zErrMsg);
+		sqlite3_close(db);
+		return -1;
+	}
+
+	sqlite3_close(db);
+	return 0;
+}

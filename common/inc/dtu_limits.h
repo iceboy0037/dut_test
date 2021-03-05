@@ -33,8 +33,8 @@ extern "C" {
 #define POINT_DESC_LENGTH	32			// 点位描述字符串长度
 #define DTU_YC_LIST_MAX		256			// 本机遥测点位最大数量
 #define POINT_UNUSED		"UNUSED"
-#define NAME_LENGTH		32			// 常用名称字符串长度
-#define VALUE_LENGTH		32			// 变量值字符串长度
+#define NAME_LENGTH		64			// 常用名称字符串长度
+#define VALUE_LENGTH		64			// 变量值字符串长度
 #define UNIT_LENGTH		16			// 单位字符串长度
 
 #ifdef __cplusplus

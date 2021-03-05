@@ -85,6 +85,7 @@ int sdb_select_multi(char *cmd, struct sdb_map_t *map, void **base, int size)
 	}
 
 	if (sqlite3_get_table(db, cmd, &result, &rows, &cols, &errmsg) != SQLITE_OK) {
+		dbg("sqlite3_get_table %s failed\n", SDB_DEFAULT_PATH);
 		sqlite3_free(errmsg);
 		sdb_close(db);
 		return -1;
@@ -104,7 +105,7 @@ int sdb_select_multi(char *cmd, struct sdb_map_t *map, void **base, int size)
 		sdb_close(db);
 		return -1;
 	}
-
+	memset(*base, 0, rows * size);
 	index = cols;
 	for (int i = 0; i < rows; i++) {
 		item_base = (ssize_t)(*base) + size * i;
@@ -113,26 +114,30 @@ int sdb_select_multi(char *cmd, struct sdb_map_t *map, void **base, int size)
 			switch (map->array[j].type) {
 			case PT_TYPE_CHAR:
 				*(char *)addr = (char)atoi(result[index]);
+				//println("CHR - offset = %d ", addr - item_base);
 				break;
 			case PT_TYPE_INT:
 				*(int *)addr = atoi(result[index]);
+				//println("STR - offset = %d ", addr - item_base);
 				break;
 			case PT_TYPE_FLOAT:
 				*(float *)addr = atof(result[index]);
+				//println("FLT - offset = %d ", addr - item_base);
 				break;
 			case PT_TYPE_STRING:
 				strcpy((char *)addr, result[index]);
+				//println("STR - offset = %d ", addr - item_base);
 				break;
 			default:
 				dbg("NOT Support\n");
 				break;
 			}
+			//println("%-8s : %-8s\n", result[j], result[index]);
 			index++;
 		}
 	}
 	sqlite3_free_table(result);
 	sdb_close(db);
-
 	return rows;
 }
 
@@ -197,5 +202,34 @@ int sdb_select_single(char *cmd, struct sdb_map_t *map, void *base)
 	sqlite3_free_table(result);
 	sdb_close(db);
 
+	return 0;
+}
+
+/**
+ * @brief Update table
+ * @param  cmd	command string
+ * @return int
+ */
+int sdb_update(char *cmd)
+{
+	char *zErrMsg = 0;
+	int rc;
+	const char* data = "Callback function called";
+
+	sqlite3 *db = sdb_open(SDB_DEFAULT_PATH);
+	if (db == NULL) {
+		return -1;
+	}
+
+	/* Execute SQL statement */
+	rc = sqlite3_exec(db, cmd, NULL, (void*)data, &zErrMsg);
+	if ( rc != SQLITE_OK ){
+		dbg("SQL error: %s\n", zErrMsg);
+		sqlite3_free(zErrMsg);
+		sqlite3_close(db);
+		return -1;
+	}
+
+	sqlite3_close(db);
 	return 0;
 }

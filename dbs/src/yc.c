@@ -384,8 +384,8 @@ int yc_save_table(struct yc_table_t *base)
 	struct pt_map_array_t *entry = get_map_entry_yc();
 	struct pt_map_t *map = entry->map;
 	int count = entry->count;
-	char key[16] = { 0 };
-	char value[16] = { 0 };
+	char key[RDB_KEY_LEN] = { 0 };
+	char value[RDB_VAL_LEN] = { 0 };
 
 	for (int i = 0; i < count; i++) {
 		sprintf(key, "yc:%s:*", map->name);
@@ -401,11 +401,11 @@ int yc_save_table(struct yc_table_t *base)
 			rdb_set_str(key, value);
 		} else {
 			struct yc_desc_t desc;
-			char cmd[128];
+			char cmd[SQL_CMD_LEN];
 
 			sprintf(cmd, "select * from tbl_yc_desc where alias='%s'", map->name);
 			dbg("%s\n", cmd);
-			if (sdb_select_single(cmd, &sdb_map_yc_desc, &desc) != 0) {
+			if (sdb_select_single(cmd, &sdb_map_tbl_yc, &desc) != 0) {
 				dbg("read desc failed\n");
 				return -1;
 			}
@@ -458,7 +458,7 @@ int yc_read_single(void *value, int id)
 	char key[STR_LEN];
 
 	sprintf(cmd, "select * from tbl_yc_desc where ptid=%d", id);
-	if (sdb_select_single(cmd, &sdb_map_yc_desc, &desc) != 0) {
+	if (sdb_select_single(cmd, &sdb_map_tbl_yc, &desc) != 0) {
 		dbg("read desc failed\n");
 		return -1;
 	}

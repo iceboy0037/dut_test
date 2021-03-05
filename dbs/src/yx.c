@@ -69,7 +69,7 @@ int yx_save_by_id(int value, int ptid, struct time_stamp *ts)
  */
 int yx_read_single(char *value, int ptid, struct time_stamp *ts)
 {
-	struct yx_desc_t desc;
+	struct tbl_yx_t desc;
 
 	if (yx_read_desc_single(&desc, ptid) != 0) {
 		dbg("YX: %d Not Exists\n", ptid);
@@ -91,12 +91,12 @@ int yx_read_single(char *value, int ptid, struct time_stamp *ts)
  * @param  ptid	Point ID
  * @return int 0 - success
  */
-int yx_read_desc_single(struct yx_desc_t *desc, int ptid)
+int yx_read_desc_single(struct tbl_yx_t *desc, int ptid)
 {
 	char cmd[SQL_CMD_LEN] = { 0 };
 
 	snprintf(cmd, SQL_CMD_LEN, "select * from tbl_yx where ptid=%d", ptid);
-	if (sdb_select_single(cmd, &sdb_map_yx_desc, desc) != 0) {
+	if (sdb_select_single(cmd, &sdb_map_tbl_yx, desc) != 0) {
 		dbg("read desc failed\n");
 		return -1;
 	}

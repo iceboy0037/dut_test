@@ -325,13 +325,13 @@ static int shell_cmd_yxset(int argc, char *argv)
 
 static int shell_cmd_lsyx(int argc, char *argv)
 {
-	struct yx_desc_t *desc;
-	struct yx_desc_t *tmp;
+	struct tbl_yx_t *desc;
+	struct tbl_yx_t *tmp;
 	int cnt;
 	char cmd[SQL_CMD_LEN + 1] = { 0 };
 
 	if (argc == 2) {	// select with ptid
-		snprintf(cmd, SQL_CMD_LEN, "select * from tbl_yx where ptid=%s", ARGV(1));
+		snprintf(cmd, SQL_CMD_LEN, "select * from tbl_yx where id=%s", ARGV(1));
 	} else if (argc == 3) {
 		snprintf(cmd, SQL_CMD_LEN, "select * from tbl_yx where fun=%s and inf=%s", ARGV(1), ARGV(2));
 	} else if (argc == 1) {
@@ -339,13 +339,13 @@ static int shell_cmd_lsyx(int argc, char *argv)
 	} else {
 		println("Usage: \n");
 		println("\tlsyx         - List all YX \n");
-		println("\tlsyx ptid    - List YX with ptid\n");
+		println("\tlsyx ptid    - List YX with id\n");
 		println("\tlsyx fun inf - List YX with fun and inf\n\n");
 		return -1;
 	}
 
 	println("--------------------------YX Status--------------------------\n");
-	cnt = sdb_select_multi(cmd, &sdb_map_yx_desc, (void **)&desc, sizeof(struct yx_desc_t));
+	cnt = sdb_select_multi(cmd, &TABLE(tbl_yx), (void **)&desc, sizeof(struct tbl_yx_t));
 	if (cnt < 0) {
 		dbg("Select failed\n");
 		return -1;
@@ -353,11 +353,11 @@ static int shell_cmd_lsyx(int argc, char *argv)
 
 	tmp = desc;
 	println("%-4s: %-6s %-6s %-6s %-6s %-24s %-32s %-32s\n",
-		"seq", "ptid", "fun", "inf", "val", "time", "alias", "desc");
+		"seq", "ptid", "fun", "inf", "val", "time", "alias", "name");
 	for (int i = 0; i < cnt; i++, desc++) {
 		println("%-4d: %-6d %-6d %-6d %-6d %-24s %-32s %-32s\n",
 			i, desc->ptid, desc->fun, desc->inf, desc->value,
-			desc->tm, desc->alias, desc->dname );
+			desc->tm, desc->alias, desc->name );
 	}
 	sdb_free(tmp);
 	return 0;
@@ -372,6 +372,88 @@ static int shell_cmd_time(int argc, char *argv)
 	println("%04d-%02d-%02d %02d:%02d:%02d.%03d %s\n",
 		ts.year, ts.month + 1, ts.date,
 		ts.hour, ts.min, ts.sec, ts.msec, day[ts.day]);
+	return 0;
+}
+
+static int shell_cmd_devinfo(int argc, char *argv)
+{
+	int cnt;
+	struct tbl_sys_t *desc;
+	char cmd[SQL_CMD_LEN + 1] = { 0 };
+
+	snprintf(cmd, SQL_CMD_LEN, "select * from tbl_sys");
+	cnt = sdb_select_multi(cmd, &TABLE(tbl_sys), (void **)&desc, sizeof(struct tbl_sys_t));
+	if (cnt < 0) {
+		dbg("Select failed\n");
+		return -1;
+	}
+	for (int i = 0; i < cnt; i++) {
+		println("%-16s - %-32s\n", desc[i].alias, desc[i].value);
+	}
+	sdb_free(desc);
+	return 0;
+}
+
+static int shell_cmd_lsgain(int argc, char *argv)
+{
+	int start;
+	int count;
+	float ary[CONFIG_ADC_CHANNEL_NUMBER];
+
+	if (argc == 2) {
+		start = atoi(ARGV(1));
+		count = 1;
+	} else if (argc == 3) {
+		start = atoi(ARGV(1));
+		count = atoi(ARGV(2));
+	} else {
+		start = 0;
+		count = CONFIG_ADC_CHANNEL_NUMBER;
+	}
+
+	if (param_gain_read(ary, start, count) < 0) {
+		dbg("Read Gain failed\n");
+		return -1;
+	}
+
+	println("  ch  value\n");
+	for (int i = 0; i < count; i++) {
+		println("%3d: %f\n", start + i, ary[i]);
+	}
+
+	return 0;
+}
+
+static int shell_cmd_setgain(int argc, char *argv)
+{
+	char cmd[SQL_CMD_LEN + 1] = { 0 };
+
+	if (argc != 3) {
+		println("Usage: \n");
+		println("\tsetgain <channel> <value>    - Set AC channel gain value\n");
+		println("\t\tchannel - 0 ~ 79\n");
+		println("\t\tvalue   - float gain value\n");
+		return -1;
+	}
+
+	snprintf(cmd, SQL_CMD_LEN, "update tbl_ac_gain set gain=%s where channel=%s", ARGV(2), ARGV(1));
+	println("Set channel %s gain to %s, ", ARGV(1), ARGV(2));
+	if (sdb_update(cmd) < 0) {
+		println("Failed\n");
+		return -1;
+	}
+	println("Successed\n");
+
+	return 0;
+}
+
+static int shell_cmd_syncgain(int argc, char *argv)
+{
+	if (param_gain_sync() < 0) {
+		println("Sync gain to M4 failed\n");
+		return -1;
+	}
+	println("Sync gain to M4 Success\n");
 	return 0;
 }
 

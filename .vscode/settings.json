@@ -1,7 +1,9 @@
 {
 	"files.associations": {
-		"*.wxss": "css",
 		"*.wxml": "html",
+		"*.wxss": "css",
+		"*.s": "riscv",
+		"*.tmpl": "html",
 		"*.inc": "c",
 		"xstring": "c",
 		"array": "cpp",
@@ -20,6 +22,9 @@
 		"map": "c",
 		"dtu.h": "c",
 		"dtu_limits.h": "c",
-		"dbg.h": "c"
+		"dbg.h": "c",
+		"tables.h": "c",
+		"rdb.h": "c",
+		"sdb.h": "c"
 	}
 }

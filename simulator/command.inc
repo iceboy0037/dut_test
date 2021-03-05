@@ -25,4 +25,10 @@ BEGIN_COMMAND(shell)
 	ON_COMMAND("togdi", shell_cmd_togdi, "togdi", "Toggle DI status")
 	ON_COMMAND("saveyc", shell_cmd_saveyc, "saveyc", "Save YC table to RDB")
 	ON_COMMAND("readyc", shell_cmd_readyc, "readyc", "Read YC from RDB")
+
+	ON_COMMAND("devinfo", shell_cmd_devinfo, "devinfo", "Display system information")
+
+	ON_COMMAND("lsgain", shell_cmd_lsgain, "lsgain", "List AC Channel gain")
+	ON_COMMAND("setgain", shell_cmd_setgain, "setgain", "Set AC Channel gain to DB")
+	ON_COMMAND("syncgain", shell_cmd_syncgain, "syncgain", "Sync AC Channel gain to M4")
 END_COMMAND(shell)

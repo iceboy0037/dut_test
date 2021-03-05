@@ -21,7 +21,7 @@ extern "C" {
 #include "dtu_types.h"
 #include "sqlite3.h"
 
-#define SDB_DEFAULT_PATH 	"../config/dtu_list.db"
+#define SDB_DEFAULT_PATH 	"../config/dtu_config_all.db"
 #define sdb_malloc		malloc
 #define	sdb_free		free
 
@@ -40,6 +40,8 @@ struct sdb_map_t {
 #define	SDB_MAP_END(name) }; struct sdb_map_t sdb_map_##name = {name##_sdb_map_array, \
 				sizeof(name##_sdb_map_array) / sizeof(struct sdb_map_item_t)};
 #define	SDB_MAP_ADDR(name) &sdb_map_##name
+#define DECLARE_TABLE(name) extern struct sdb_map_t sdb_map_##name;
+#define TABLE(name) sdb_map_##name
 
 /**
  * @brief Execuate Select command, malloc list memory and fill associated structure list
@@ -72,6 +74,13 @@ extern sqlite3 *sdb_open(char *path);
  * @param  db	DB pointer
  */
 extern void sdb_close(sqlite3 *db);
+
+/**
+ * @brief Update table
+ * @param  cmd	command string
+ * @return int
+ */
+int sdb_update(char *cmd);
 
 #ifdef __cplusplus
 }

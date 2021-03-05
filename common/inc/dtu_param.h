@@ -105,6 +105,10 @@ struct bus_config_t {
 };
 
 extern struct bus_config_t bus_array[BUS_NUMBER_MAX];
+extern int param_gain_read(float *ary, int start, int count);
+extern int param_gain_write(float *ary, int start, int count);
+extern int param_gain_sync(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,5 +1,6 @@
-TARGET = ./simulator.out
-CROSS_COMPILE =arm-fsl-linux-gnueabi-
+TARGET = ./dtush
+#CROSS_COMPILE =arm-fsl-linux-gnueabi-
+CROSS_COMPILE =
 DEBUG=
 LIBS = -lm -lpthread -lhiredis -lsqlite3
 DEF = -DSIMULATOR
